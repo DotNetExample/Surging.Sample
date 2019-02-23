@@ -5,7 +5,6 @@ metadata:
     app: hl
     component: rabbitmq
   name: rabbitmq
-  namespace: hl
 spec:
   ports:
   - port: 5672
@@ -18,7 +17,6 @@ apiVersion: extensions/v1beta1
 kind: Deployment
 metadata:
   name: rabbitmq
-  namespace: hl
 spec:
   template:
     metadata:

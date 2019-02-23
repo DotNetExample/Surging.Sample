@@ -5,7 +5,6 @@ metadata:
     app: hl
     component: consul
   name: consul
-  namespace: hl
 spec:
   ports:
   - name: "8400"
@@ -30,7 +29,6 @@ apiVersion: extensions/v1beta1
 kind: Deployment
 metadata:
   name: consul
-  namespace: hl
 spec:
   template:
     metadata:

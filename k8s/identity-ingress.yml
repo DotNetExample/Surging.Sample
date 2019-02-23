@@ -1,0 +1,18 @@
+apiVersion: extensions/v1beta1
+kind: Ingress
+metadata:
+  labels:
+    app: hl
+    component: frontend
+  name: hl-ingress
+  annotations:
+    ingress.kubernetes.io/ssl-redirect: "false" 
+spec:
+  rules:
+  - host: identity.hl
+    http:
+      paths:
+      - path: /
+        backend:
+          serviceName: identity
+          servicePort: 8080

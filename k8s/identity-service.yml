@@ -5,8 +5,8 @@ metadata:
     app: hl
     component: identity
   name: identity
-  namespace: hl
 spec:
+  type: LoadBalancer
   ports:
   - name: "http-port"
     port: 8080

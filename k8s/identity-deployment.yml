@@ -2,7 +2,6 @@ apiVersion: extensions/v1beta1
 kind: Deployment
 metadata:
   name: identity
-  namespace: hl
 spec:
   paused: true
   template:
@@ -13,54 +12,25 @@ spec:
     spec:
       containers:
       - name: identity
-        image: liuhl/identity:v0.0.1
+        image: liuhl/identity:v0.0.2
         imagePullPolicy: Always
         env:
         - name: Register_Conn
-          valueFrom:
-            configMapKeyRef:
-              name: hlcfg
-              key: all__Consul_Register_Conn
+          value: "consul:8500"
         - name: Register_SessionTimeout
-          valueFrom:
-            configMapKeyRef:
-              name: hlcfg
-              key: all__Register_SessionTimeout
+          value: "50"
         - name: UseEngineParts
-          valueFrom:
-            configMapKeyRef:
-              name: hlcfg
-              key: all__Normal_Service_Engine
+          value: "DotNettyModule;Log4netModule;ConsulModule;EventBusRabbitMQModule;CachingModule;AutoMapperModule;KestrelHttpModule;"
         - name: EventBusConnection
-          valueFrom:
-            configMapKeyRef:
-              name: hlcfg
-              key: all__EventBusConnection
+          value: "rabbitmq"
         - name: EventBusUserName
-          valueFrom:
-            configMapKeyRef:
-              name: hlcfg
-              key: all__EventBusUserName
+          value: "rabbitmq"
         - name: EventBusPassword
-          valueFrom:
-            configMapKeyRef:
-              name: hlcfg
-              key: all__EventBusPassword
+          value: "rabbitmq"
         - name: EventBusPort
-          valueFrom:
-            configMapKeyRef:
-              name: hlcfg
-              key: all__EventBusPort
+          value: "5672"
         - name: Environment
-          valueFrom:
-            configMapKeyRef:
-              name: hlcfg
-              key: all__Environment
-        - name: ForceDisplayStackTrace
-          valueFrom:
-            configMapKeyRef:
-              name: hlcfg
-              key: all__ForceDisplayStackTrace
+          value: "Development"
         - name: SwaggerTitle
           value: "身份认证微服务组件"
         - name: SwaggerDes
@@ -70,3 +40,4 @@ spec:
           name: http-port
         - containerPort: 100
           name: rpc-port
+
