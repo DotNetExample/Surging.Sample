@@ -1,6 +1,9 @@
 # Surging Sample
 
- [![Build Status](https://api.travis-ci.com/liuhll/Surging.Sample.svg?branch=master)](https://travis-ci.com/liuhll/Surging.Sample)
+[![Build Status](https://api.travis-ci.com/liuhll/Surging.Sample.svg?branch=master)](https://travis-ci.com/liuhll/Surging.Sample) 
+[![hits](http://hits.dwyl.io/liuhll/Surging.Sample.svg)](http://hits.dwyl.io/liuhll/Surging.Sample)
+[![issues](https://img.shields.io/github/issues-raw/liuhll/Surging.Sample.svg?style=flat-square)](https://github.com/liuhll/Surging.Sample/issues)
+[![releases](https://img.shields.io/github/release/liuhll/Surging.Sample.svg?style=flat-square)](https://github.com/liuhll/Surging.Sample/releases)
 
 ## 开发与运行环境
 ### IDE
