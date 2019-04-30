@@ -96,15 +96,6 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Configs", "Configs", "{912D
 		..\src\Shares\Configs\surgingSettings.json = ..\src\Shares\Configs\surgingSettings.json
 	EndProjectSection
 EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Props", "Props", "{7600A862-6A17-4E16-8E98-588F38BF2EDD}"
-	ProjectSection(SolutionItems) = preProject
-		..\src\Shares\Props\applicationpackage.props = ..\src\Shares\Props\applicationpackage.props
-		..\src\Shares\Props\common.props = ..\src\Shares\Props\common.props
-		..\src\Shares\Props\domainpackage.props = ..\src\Shares\Props\domainpackage.props
-		..\src\Shares\Props\hostpackage.props = ..\src\Shares\Props\hostpackage.props
-		..\src\Shares\Props\ws.applicationpackage.props = ..\src\Shares\Props\ws.applicationpackage.props
-	EndProjectSection
-EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Hl.Customer.Domain", "..\src\Servers\Customer\Hl.Customer.Domain\Hl.Customer.Domain.csproj", "{975E20D5-52D2-4480-A8E1-53B6DBA3E376}"
 EndProject
 Project("{E53339B2-1760-4266-BCC7-CA923CBCF16C}") = "docker-compose", "..\docker-compose\hl\docker-compose.dcproj", "{FEA0C318-FFED-4D39-8781-265718CA43FF}"
@@ -129,23 +120,23 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Hl.BasicData.ServerHost", "
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Hl.BasicData.Domain", "..\src\Servers\BasicData\Hl.BasicData.Domain\Hl.BasicData.Domain.csproj", "{0810FD8E-E938-46BC-830F-8F53AF918203}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Hl.BasicData.Common", "..\src\Servers\BasicData\Hl.BasicData.Common\Hl.BasicData.Common.csproj", "{4F95FBD1-35AE-40C4-923D-4964C15189A4}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Hl.BasicData.Common", "..\src\Servers\BasicData\Hl.BasicData.Common\Hl.BasicData.Common.csproj", "{4F95FBD1-35AE-40C4-923D-4964C15189A4}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Hl.Customer.Common", "..\src\Servers\Customer\Hl.Customer.Common\Hl.Customer.Common.csproj", "{44FCCCB7-71C2-4A0B-AEBC-9C32CD974E7A}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Hl.Customer.Common", "..\src\Servers\Customer\Hl.Customer.Common\Hl.Customer.Common.csproj", "{44FCCCB7-71C2-4A0B-AEBC-9C32CD974E7A}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Hl.Identity.Common", "..\src\Servers\Identity\Hl.Identity.Common\Hl.Identity.Common.csproj", "{D6062957-C6EE-4662-A98C-C8DC46B50D4A}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Hl.Identity.Common", "..\src\Servers\Identity\Hl.Identity.Common\Hl.Identity.Common.csproj", "{D6062957-C6EE-4662-A98C-C8DC46B50D4A}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Hl.Order.Common", "..\src\Servers\Order\Hl.Order.Common\Hl.Order.Common.csproj", "{F40C891C-A20E-468F-BA6F-B7CF4824319C}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Hl.Order.Common", "..\src\Servers\Order\Hl.Order.Common\Hl.Order.Common.csproj", "{F40C891C-A20E-468F-BA6F-B7CF4824319C}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Hl.Organization.Common", "..\src\Servers\Organization\Hl.Organization.Common\Hl.Organization.Common.csproj", "{F0AA6571-A941-41D6-AC6F-41A195F1E0D5}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Hl.Organization.Common", "..\src\Servers\Organization\Hl.Organization.Common\Hl.Organization.Common.csproj", "{F0AA6571-A941-41D6-AC6F-41A195F1E0D5}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Hl.Product.Common", "..\src\Servers\Product\Hl.Product.Common\Hl.Product.Common.csproj", "{85D03E8A-C1A6-43B7-BE47-C857A7DBD3B2}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Hl.Product.Common", "..\src\Servers\Product\Hl.Product.Common\Hl.Product.Common.csproj", "{85D03E8A-C1A6-43B7-BE47-C857A7DBD3B2}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Hl.Schedule.Common", "..\src\Servers\Schedule\Hl.Schedule.Common\Hl.Schedule.Common.csproj", "{F279B079-AB2E-4C8E-A997-5A4A6A0D4E9B}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Hl.Schedule.Common", "..\src\Servers\Schedule\Hl.Schedule.Common\Hl.Schedule.Common.csproj", "{F279B079-AB2E-4C8E-A997-5A4A6A0D4E9B}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Hl.Stock.Common", "..\src\Servers\Stock\Hl.Stock.Common\Hl.Stock.Common.csproj", "{6AC63138-EC4F-4A5F-80EF-5C9E794C2955}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Hl.Stock.Common", "..\src\Servers\Stock\Hl.Stock.Common\Hl.Stock.Common.csproj", "{6AC63138-EC4F-4A5F-80EF-5C9E794C2955}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Hl.Ws.Common", "..\src\Servers\WsServer\Hl.Ws.Common\Hl.Ws.Common.csproj", "{88D98620-252B-426C-B731-76C9C43117CF}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Hl.Ws.Common", "..\src\Servers\WsServer\Hl.Ws.Common\Hl.Ws.Common.csproj", "{88D98620-252B-426C-B731-76C9C43117CF}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -389,7 +380,6 @@ Global
 		{840A4430-B4BA-414A-A986-3C3446D50D38} = {DC7959F9-6F18-4220-B69A-760EBC44CC20}
 		{E38B822E-B5A8-4651-A6FA-92A261454678} = {DC7959F9-6F18-4220-B69A-760EBC44CC20}
 		{912DDE6A-7149-4619-AFFB-36DA7273F994} = {D0658F8C-8245-4B4E-B34D-45B692E6C2D4}
-		{7600A862-6A17-4E16-8E98-588F38BF2EDD} = {D0658F8C-8245-4B4E-B34D-45B692E6C2D4}
 		{975E20D5-52D2-4480-A8E1-53B6DBA3E376} = {5DA2851C-F88A-4E5B-84B1-B2ABF7B63969}
 		{F09DB139-4C00-4188-918F-CDBFEECF5CCF} = {35C1C8D3-74EA-49EA-BDC8-6F75A58E1ECB}
 		{C608DCF6-049B-4E93-826F-A431AD59DD66} = {F09DB139-4C00-4188-918F-CDBFEECF5CCF}

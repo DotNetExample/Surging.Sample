@@ -33,6 +33,11 @@
         DataAccessError = 505,
 
         /// <summary>
+        /// 用户友好类异常
+        /// </summary>
+        UserFriendly = 506,
+
+        /// <summary>
         /// 未被认证
         /// </summary>
         UnAuthentication = 401,

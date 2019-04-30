@@ -9,7 +9,7 @@
 ## 开发与运行环境
 ### IDE
 - Visual Studio 2017/Visual Studio 2019
-- Visual Studio Core
+- Visual Studio Code
 
 ### Docker 和 Docker-Compose
 1. 通过[docker官网](https://hub.docker.com/editions/community/docker-ce-desktop-windows)下载并安装docker for windows,安装完

@@ -1,8 +1,6 @@
 ﻿using Surging.Core.CPlatform.Configurations;
 using Surging.Core.CPlatform.Messages;
 using System;
-using System.Collections.Generic;
-using System.Text;
 
 namespace Surging.Core.CPlatform.Exceptions
 {
@@ -14,7 +12,12 @@ namespace Surging.Core.CPlatform.Exceptions
                 return string.Empty;
 
             var message = exception.Message;
-            if (AppConfig.ServerOptions.Environment == RuntimeEnvironment.Development && !(exception is BusinessException) && !(exception is ValidateException))
+            if (AppConfig.ServerOptions.Environment == RuntimeEnvironment.Development
+                && ((exception.GetGetExceptionStatusCode() == StatusCode.CPlatformError)
+                && (exception.GetGetExceptionStatusCode() == StatusCode.DataAccessError)
+                && (exception.GetGetExceptionStatusCode() == StatusCode.RequestError)
+                && (exception.GetGetExceptionStatusCode() == StatusCode.UnKnownError)
+                || AppConfig.ServerOptions.ForceDisplayStackTrace))
             {
                 message += Environment.NewLine + " 堆栈信息:" + exception.StackTrace;
                 if (exception.InnerException != null)
@@ -26,7 +29,18 @@ namespace Surging.Core.CPlatform.Exceptions
             {
                 if (exception.InnerException != null)
                 {
-                    message += "|InnerException:" + GetExceptionMessage(exception.InnerException);
+                    if (exception.InnerException is BusinessException
+                        || exception.InnerException is ValidateException 
+                        || exception.InnerException is AuthException 
+                        || exception.InnerException is UserFriendlyException)
+                    {
+                        message = exception.InnerException.Message;
+                    }
+                    else
+                    {
+                        message += ";" + GetExceptionMessage(exception.InnerException);
+                    }
+
                 }
             }
 

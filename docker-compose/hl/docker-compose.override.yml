@@ -10,6 +10,8 @@ services:
       EventBusUserName:  ${RABBITMQ_USERNAME:-rabbitmq}
       EventBusPassword:  ${RABBITMQ_PASSWORD:-rabbitmq}
       EventBusPort: ${RABBITMQ_PORT:-5672}
+      DbType: ${CUSTOMER_DB_TYPE:-MySql}
+      ConnectionString: ${CUSTOMER_DB_CONN}
       SwaggerTitle: "hlservice.customer"
       SwaggerDes: "客户信息管理服务组件API文档"
       SupportName: "LiuHongliang"
@@ -22,11 +24,12 @@ services:
       Register_Conn: ${REGISTER_CONN:-consul:8500}
       Register_SessionTimeout: ${REGISTER_SESSION_TIMEOUT:-50}
       UseEngineParts: ${NORMAL_SERVER_ENGINE}
-      ConnectionString: "Server=mysql;Database=surging_demo_identity;Uid=root;Port=3306;Pwd=Surging!P4ss"
       EventBusConnection: ${RABBITMQ_CONNECTION:-rabbitmq}
       EventBusUserName:  ${RABBITMQ_USERNAME:-rabbitmq}
       EventBusPassword:  ${RABBITMQ_PASSWORD:-rabbitmq}
       EventBusPort: ${RABBITMQ_PORT:-5672}
+      DbType: ${IDENTITY_DB_TYPE:-MySql}
+      ConnectionString: ${IDENTITY_DB_CONN}
       SwaggerTitle: "hlservice.identity"
       SwaggerDes: "微服务集群身份认证与授权组件API文档"
       SupportName: "LiuHongliang"
@@ -43,6 +46,8 @@ services:
       EventBusUserName:  ${RABBITMQ_USERNAME:-rabbitmq}
       EventBusPassword:  ${RABBITMQ_PASSWORD:-rabbitmq}
       EventBusPort: ${RABBITMQ_PORT:-5672}
+      DbType: ${ORDER_DB_TYPE:-MySql}
+      ConnectionString: ${ORDER_DB_CONN}
       SwaggerTitle: "hlservice.order"
       SwaggerDes: "订单微服务组件API文档"
       SupportName: "LiuHongliang"
@@ -59,6 +64,8 @@ services:
       EventBusUserName:  ${RABBITMQ_USERNAME:-rabbitmq}
       EventBusPassword:  ${RABBITMQ_PASSWORD:-rabbitmq}
       EventBusPort: ${RABBITMQ_PORT:-5672}
+      DbType: ${PRODUCT_DB_TYPE:-MySql}
+      ConnectionString: ${PRODUCT_DB_CONN}
       SwaggerTitle: "hlservice.product"
       SwaggerDes: "产品管理微服务组件API文档"
       SupportName: "LiuHongliang"
@@ -75,6 +82,11 @@ services:
       EventBusUserName:  ${RABBITMQ_USERNAME:-rabbitmq}
       EventBusPassword:  ${RABBITMQ_PASSWORD:-rabbitmq}
       EventBusPort: ${RABBITMQ_PORT:-5672}
+      DbType: ${SCHEDULE_DB_TYPE:-MySql}
+      ConnectionString: ${SCHEDULE_DB_CONN}
+      Norm_DbType: ${SCHEDULE_DB_NORM_TYPE:-MySql}
+      Norm_ConnectionString: ${SCHEDULE_DB_NORM_CONN}
+      Norm_DataSourceProvider: ${SCHEDULE_DB_NORM_DATASORCEPROVIDER:-MySql}
       SwaggerTitle: "hlservice.schedule"
       SwaggerDes: "任务调度微服务组件API文档"
       SupportName: "LiuHongliang"
@@ -91,6 +103,8 @@ services:
       EventBusUserName:  ${RABBITMQ_USERNAME:-rabbitmq}
       EventBusPassword:  ${RABBITMQ_PASSWORD:-rabbitmq}
       EventBusPort: ${RABBITMQ_PORT:-5672}
+      DbType: ${STOCK_DB_TYPE:-MySql}
+      ConnectionString: ${STOCK_DB_CONN}
       SwaggerTitle: "hlservice.stock"
       SwaggerDes: "库存管理微服务组件API文档"
       SupportName: "LiuHongliang"
@@ -107,6 +121,8 @@ services:
       EventBusUserName:  ${RABBITMQ_USERNAME:-rabbitmq}
       EventBusPassword:  ${RABBITMQ_PASSWORD:-rabbitmq}
       EventBusPort: ${RABBITMQ_PORT:-5672}
+      DbType: ${ORGANIZATION_DB_TYPE:-MySql}
+      ConnectionString: ${ORGANIZATION_DB_CONN}
       SwaggerTitle: "hlservice.organization"
       SwaggerDes: "组织机构微服务组件API文档"
       SupportName: "LiuHongliang"
@@ -123,6 +139,8 @@ services:
       EventBusUserName:  ${RABBITMQ_USERNAME:-rabbitmq}
       EventBusPassword:  ${RABBITMQ_PASSWORD:-rabbitmq}
       EventBusPort: ${RABBITMQ_PORT:-5672}
+      DbType: ${BASICDATA_DB_TYPE:-MySql}
+      ConnectionString: ${BASICDATA_DB_CONN}
       SwaggerTitle: "hlservice.basicdata"
       SwaggerDes: "基础数据微服务组件API文档"
       SupportName: "LiuHongliang"

@@ -5,9 +5,8 @@
   "isClustered": true,
   "immediateStart": true,
   "clusterOption": {
-    "dbType": "MySql",
-    "dbName": "SchedulJob",
-    "dbConnectionString": "Server=mysql;Database=quartz;Uid=root;Port=3306;Pwd=Surging!P4ss",
-    "DataSourceProvider": "MySql"
+    "dbType": "${Norm_DbType|MySql}",
+    "dbConnectionString": "${Norm_ConnectionString|Server=mysql;Database=quartz;Uid=root;Port=3306;Pwd=Surging!P4ss}",
+    "DataSourceProvider": "${Norm_DataSourceProvider|Mysql}"
   }
 }
