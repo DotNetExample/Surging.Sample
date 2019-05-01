@@ -2,11 +2,11 @@
 
 namespace Hl.Identity.Domain.Authorization.Users
 {
-    public class UserRole : AuditedEntity<string>
+    public class UserRole : AuditedEntity<long>
     {
-        public string UserId { get; set; }
+        public long UserId { get; set; }
 
-        public string RoleId { get; set; }
+        public long RoleId { get; set; }
 
     }
 }

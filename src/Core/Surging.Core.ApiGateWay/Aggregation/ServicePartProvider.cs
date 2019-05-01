@@ -1,4 +1,5 @@
 ﻿using Newtonsoft.Json.Linq;
+using Surging.Core.ApiGateWay.Configurations;
 using Surging.Core.ProxyGenerator;
 using System;
 using System.Collections.Concurrent;

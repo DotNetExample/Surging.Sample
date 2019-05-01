@@ -1,32 +1,32 @@
-﻿using Surging.Core.Domain.Entities.Auditing;
-using System;
-using System.Collections.Generic;
+﻿using Hl.Core.Enums;
+using Surging.Core.Domain.Entities.Auditing;
 
 namespace Hl.Identity.Domain.Authorization.Users
 {
-    public class UserInfo : FullAuditedEntity<string>
+    public class UserInfo : FullAuditedEntity<long>
     {
         public UserInfo()
         {
-            Roles = new List<UserRole>();
+            //Roles = new List<UserRole>();
+
+            Status = Status.Valid;
         }
 
-        public string UserName { get; set; }
-
-        public string Password { get; set; }
-
-        public string ChineseName { get; set; }
+        public long EmployeeId { get; set; }
 
         public string Email { get; set; }
 
         public string Phone { get; set; }
 
-        public string Address { get; set; }
+        public string UserName { get; set; }
 
-        public string QQ { get; set; }
+        public string Password { get; set; }
 
-        public string Wechat { get; set; }
 
-        public virtual ICollection<UserRole> Roles { get; set; }
+        public Status Status { get; set; }
+
+        //public EmployeeAggregate Employee { get; set; }
+
+        //public virtual ICollection<UserRole> Roles { get; set; }
     }
 }

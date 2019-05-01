@@ -1,6 +1,8 @@
-﻿<Project Sdk="Microsoft.NET.Sdk" ToolsVersion="Current">
-
+﻿<Project Sdk="Microsoft.NET.Sdk">
   <Import Project="..\..\..\Shares\Props\hostpackage.props" />
+  <PropertyGroup>
+    <TargetFramework>netcoreapp2.2</TargetFramework>
+  </PropertyGroup>
   <ItemGroup>
     <ProjectReference Include="..\Hl.BasicData.Application\Hl.BasicData.Application.csproj" />
   </ItemGroup>

@@ -2,6 +2,7 @@
 using Surging.Core.Dapper.Repositories;
 using Surging.Core.ProxyGenerator;
 using Surging.Debug.Test1.Domain.Demo.Entities;
+using Surging.Debug.Test1.Domain.UserInfo;
 using Surging.Debug.Test1.IApplication.Demo;
 using Surging.Debug.Test1.IApplication.Demo.Dtos;
 using System;
@@ -32,6 +33,20 @@ namespace Surging.Debug.Test1.Application.Demo
             var demoRepository = GetService<IDapperRepository<DemoEntity, string>>();
             var entity = input.MapTo<DemoEntity>();
             await demoRepository.InsertAsync(entity);
+        }
+
+        public async Task<string> CreateUser()
+        {
+            var userRepositroy = GetService<IDapperRepository<UserInfo, long>>();
+            await userRepositroy.InsertAsync(new UserInfo()
+            {
+                Email = "1111",
+                Password = "123qwe",
+                EmployeeId = 1,
+                Phone = "1111",
+                UserName = "sdsds"
+            });
+            return "OK";
         }
     }
 }

@@ -1,4 +1,4 @@
-FROM mcr.microsoft.com/dotnet/core/runtime:2.2-alpine AS base
+FROM microsoft/dotnet:2.2.0-runtime AS base
 WORKDIR /app
 ARG rpc_port=100
 ARG http_port=8080

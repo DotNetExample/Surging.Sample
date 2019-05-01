@@ -7,6 +7,7 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Surging.Core.ApiGateWay;
 using Surging.Core.ApiGateWay.OAuth;
+using Surging.Core.ApiGateWay.OAuth.Models;
 using Surging.Core.CPlatform;
 using Surging.Core.CPlatform.Exceptions;
 using Surging.Core.CPlatform.Filters.Implementation;
@@ -56,6 +57,7 @@ namespace Hl.Gateway.WebApi.Controllers
             {
                 return new ServiceResult<object> { IsSucceed = false, StatusCode = (int)MessageStatusCode.RequestError, Message = "请求错误" };
             }
+            var appConfig = GateWayAppConfig.ServicePart;
 
             if (servicePartProvider.IsPart(path))
             {
@@ -66,23 +68,28 @@ namespace Hl.Gateway.WebApi.Controllers
             {
                 if (OnAuthorization(path, model, ref result))
                 {
-                    if (path == GateWayAppConfig.AuthenticationRoutePath || path == GateWayAppConfig.ThirdPartyAuthenticationRoutePath)
+                    if (path == GateWayAppConfig.AuthenticationRoutePath)
                     {
-                        var accessSystemType = AccessSystemType.Inner;
-                        if (path == GateWayAppConfig.ThirdPartyAuthenticationRoutePath)
+                        try
                         {
-                            accessSystemType = AccessSystemType.ThirdParty;
+                            var token = await _authorizationServerProvider.GenerateTokenCredential(model);
+                            if (token != null)
+                            {
+                                result = ServiceResult<object>.Create(true, token);
+                                result.StatusCode = (int)MessageStatusCode.Ok;
+                            }
+                            else
+                            {
+                                result = new ServiceResult<object> { IsSucceed = false, StatusCode = (int)MessageStatusCode.UnAuthentication, Message = "不合法的身份凭证" };
+                            }
+                        }                      
+                        catch (CPlatformException ex)
+                        {
+                            result = new ServiceResult<object> { IsSucceed = false, StatusCode = (int)MessageStatusCode.CPlatformError, Message = ex.Message };
                         }
-
-                        var token = await _authorizationServerProvider.GenerateTokenCredential(model, accessSystemType);
-                        if (token != null)
+                        catch (Exception ex)
                         {
-                            result = ServiceResult<object>.Create(true, token);
-                            result.StatusCode = (int)MessageStatusCode.OK;
-                        }
-                        else
-                        {
-                            result = new ServiceResult<object> { IsSucceed = false, StatusCode = (int)MessageStatusCode.UnAuthentication, Message = "不合法的身份凭证" };
+                            result = new ServiceResult<object> { IsSucceed = false, StatusCode = (int)MessageStatusCode.UnKnownError, Message = ex.Message };
                         }
                     }
                     else
@@ -91,12 +98,12 @@ namespace Hl.Gateway.WebApi.Controllers
                         {
                             if (!string.IsNullOrEmpty(serviceKey))
                             {
-                                var data = (string)await _serviceProxyProvider.Invoke<object>(model, path, serviceKey);
+                                var data = await _serviceProxyProvider.Invoke<object>(model, path, serviceKey);
                                 return CreateServiceResult(data);
                             }
                             else
                             {
-                                var data = (string)await _serviceProxyProvider.Invoke<object>(model, path);
+                                var data = await _serviceProxyProvider.Invoke<object>(model, path);
                                 if (data == null)
                                 {
                                     return new ServiceResult<object> { IsSucceed = false, StatusCode = (int)MessageStatusCode.UnKnownError, Message = "服务异常" };
@@ -107,6 +114,10 @@ namespace Hl.Gateway.WebApi.Controllers
                         catch (CPlatformException ex)
                         {
                             return new ServiceResult<object> { IsSucceed = false, StatusCode = (int)ex.ExceptionCode, Message = ex.Message };
+                        }
+                        catch (Exception ex)
+                        {
+                            return new ServiceResult<object> { IsSucceed = false, StatusCode = (int)MessageStatusCode.UnKnownError, Message = ex.Message };
                         }
                     }
                 }
@@ -176,13 +187,33 @@ namespace Hl.Gateway.WebApi.Controllers
             }
         }
 
-        private ServiceResult<object> CreateServiceResult(string data)
+        private ServiceResult<object> CreateServiceResult(object data)
         {
-            var serializer = ServiceLocator.GetService<ISerializer<string>>();
-            var dataObj = serializer.Deserialize(data, typeof(object), true);
-            var serviceResult = ServiceResult<object>.Create(true, dataObj);
-            serviceResult.StatusCode = (int)MessageStatusCode.OK;
-            return serviceResult;
+            if (data.GetType() == typeof(string))
+            {
+                var dataStr = (string)data;
+                if (dataStr.IsValidJson())
+                {
+                    var serializer = ServiceLocator.GetService<ISerializer<string>>();
+                    var dataObj = serializer.Deserialize(dataStr, typeof(object), true);
+                    var serviceResult = ServiceResult<object>.Create(true, dataObj);
+                    serviceResult.StatusCode = (int)MessageStatusCode.Ok;
+                    return serviceResult;
+                }
+                else
+                {
+                    var serviceResult = ServiceResult<object>.Create(true, data);
+                    serviceResult.StatusCode = (int)MessageStatusCode.Ok;
+                    return serviceResult;
+
+                }
+            }
+            else
+            {
+                var serviceResult = ServiceResult<object>.Create(true, data);
+                serviceResult.StatusCode = (int)MessageStatusCode.Ok;
+                return serviceResult;
+            }
         }
     }
 }

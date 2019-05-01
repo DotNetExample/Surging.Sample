@@ -21,15 +21,15 @@ namespace Hl.ServiceHost
         {
             var host = new ServiceHostBuilder()
                  .RegisterServices(builder =>
-                 { 
+                 {
                      builder.AddMicroService(option =>
                       {
                           option.AddServiceRuntime()
-                           .AddRelateService()
+                           .AddClientProxy()
+                           .AddRelateServiceRuntime()
                            .AddConfigurationWatch()
                            .AddClientIntercepted(typeof(CacheProviderInterceptor))
                            .AddServiceEngine(typeof(SurgingServiceEngine))
-                           .AddDapperRepository()
                            ;
 
                           builder.Register(p => new CPlatformContainer(ServiceLocator.Current));
@@ -46,7 +46,7 @@ namespace Hl.ServiceHost
                  {
 #if DEBUG
                      build.AddCacheFile("${cachePath}|/app/configs/cacheSettings.json", optional: false, reloadOnChange: true);
-                     build.AddCPlatformFile("${surgingPath}|/app/configs/surgingSettings.json", optional: false, reloadOnChange: true);                   
+                     build.AddCPlatformFile("${surgingPath}|/app/configs/surgingSettings.json", optional: false, reloadOnChange: true);
                      build.AddEventBusFile("${eventBusPath}|/app/configs/eventBusSettings.json", optional: false);
                      build.AddConsulFile("${consulPath}|/app/configs/consul.json", optional: false, reloadOnChange: true);
 

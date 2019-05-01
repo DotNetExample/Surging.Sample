@@ -278,5 +278,6 @@ api/
 !**/SwaggerUI/node_modules/
 cacheSettings.json
 !**/Shares/**/cacheSettings.json
-mysql/
+**/mysql/
+**/.mysql/
 **/logs

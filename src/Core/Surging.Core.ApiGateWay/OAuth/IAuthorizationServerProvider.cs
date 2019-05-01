@@ -8,7 +8,7 @@ namespace Surging.Core.ApiGateWay.OAuth
     public interface IAuthorizationServerProvider
     {
 
-        Task<string> GenerateTokenCredential(LoginInput input);
+        Task<string> GenerateTokenCredential(IDictionary<string, object> rpcParams);
 
         Task<bool> ValidateClientAuthentication(string token);
 

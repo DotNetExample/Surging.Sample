@@ -1,5 +1,8 @@
 ﻿using MySql.Data.MySqlClient;
 using Oracle.ManagedDataAccess.Client;
+using Surging.Core.CPlatform.EventBus.Events;
+using Surging.Core.CPlatform.EventBus.Implementation;
+using Surging.Core.CPlatform.Utilities;
 using System;
 using System.Data.Common;
 using System.Data.SqlClient;
@@ -75,5 +78,29 @@ namespace Surging.Core.Dapper.Manager
 
         }
 
+        public virtual T GetService<T>() where T : class
+        {
+            return ServiceLocator.GetService<T>();
+        }
+
+        public virtual T GetService<T>(string key) where T : class
+        {
+            return ServiceLocator.GetService<T>(key);
+        }
+
+        public virtual object GetService(Type type)
+        {
+            return ServiceLocator.GetService(type);
+        }
+
+        public virtual object GetService(string key, Type type)
+        {
+            return ServiceLocator.GetService(key, type);
+        }
+
+        public void Publish(IntegrationEvent @event)
+        {
+            GetService<IEventBus>().Publish(@event);
+        }
     }
 }

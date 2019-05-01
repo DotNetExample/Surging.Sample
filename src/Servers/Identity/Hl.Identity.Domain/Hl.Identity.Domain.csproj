@@ -4,13 +4,14 @@
   <PropertyGroup>
     <TargetFramework>netcoreapp2.2</TargetFramework>
   </PropertyGroup>
-
   <ItemGroup>
-    <ProjectReference Include="..\..\..\CommonComponents\Hl.Core\Hl.Core.csproj" />
+    <Compile Remove="Organizations\**" />
+    <EmbeddedResource Remove="Organizations\**" />
+    <None Remove="Organizations\**" />
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="Organizations\" />
+    <ProjectReference Include="..\..\..\CommonComponents\Hl.Core\Hl.Core.csproj" />
   </ItemGroup>
 
 </Project>

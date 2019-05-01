@@ -1,29 +1,16 @@
-﻿using Hl.Core.Manager;
-using Hl.Infrastructure.Utilities;
-using Surging.Core.CPlatform.Exceptions;
-using Surging.Core.CPlatform.Ioc;
-using Surging.Core.CPlatform.Utilities;
-using System.Threading.Tasks;
+﻿using Surging.Core.Dapper.Manager;
+using Surging.Core.Dapper.Repositories;
 
 namespace Hl.Identity.Domain.Authorization.Users
 {
-    public class UserManager : ITransientDependency
+    public class UserManager : ManagerBase, IUserManager
     {
-        private readonly UserStore _userStore;
-        public UserManager(UserStore userStore)
+        private readonly IDapperRepository<UserInfo,long> _userRepository;
+        public UserManager(IDapperRepository<UserInfo, long> userRepository)
         {
-            _userStore = userStore;
+            _userRepository = userRepository;
         }
 
-        public async Task CreateAsync(UserInfo user)
-        {
-            var exsitUserInfo = await _userStore.UserRepository.FirstOrDefaultAsync(p => p.UserName == user.UserName);
-            if (exsitUserInfo != null)
-            {
-                throw new BusinessException($"系统中已经存在{user.UserName},请重新输入后用户名");
-            }
-            user.Password = ServiceLocator.GetService<IPasswordHelper>().EncryptPassword(user.UserName,user.Password);
-            await _userStore.CreateAsync(user);
-        }
+
     }
 }

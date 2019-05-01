@@ -1,11 +1,18 @@
 ﻿{
   "AccessTokenExpireTimeSpan": "30",
-  "AuthenticationRoutePath": "v1/api/account//login",
-  "ThirdPartyAuthenticationRoutePath": "api/account//authentication",
-  "AuthorizationRoutePath": "v1/api//authorize",
+  "AuthenticationRoutePath": "v1/api/account/login",
+  //"ThirdPartyAuthenticationRoutePath": "api/account/authentication",
+  "AuthorizationRoutePath": "v1/api/authorize",
   "AuthorizationServiceKey": "",
   "WhiteList": [],
-  "CacheMode": "ddlCache.Redis", //MemoryCache or  gateway.Redis save token
+  "CacheMode": "ddlCache.Redis",
+  "JwtConfig": {
+    "Iss": "hl",
+    "Aud": "hl_aud",
+    "Period": 100000,
+    "EncryptionAlgorithm": "HS256",
+    "SecretKey": "ULJtOaYEr94jRXd8JFJdCFc1eMDTchRSYMQma5RpgSbUtkclXTJlsSVdCCdfySh1bewDvQWU92e1qAnmBgZLGPqhf1Ee1IbuqYQ" // 
+  },
   "AccessPolicy": {
     "Origins": [ "*" ],
     "AllowAnyHeader": true,

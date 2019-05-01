@@ -10,6 +10,8 @@ services:
       EventBusUserName:  ${RABBITMQ_USERNAME:-rabbitmq}
       EventBusPassword:  ${RABBITMQ_PASSWORD:-rabbitmq}
       EventBusPort: ${RABBITMQ_PORT:-5672}
+      DbType: ${IDENTITY_DB_TYPE:-MySql}
+      ConnectionString: ${IDENTITY_DB_CONN}
       SwaggerTitle: "测试调式服务组件"
       SwaggerDes: "用于调式源代码的服务组件"
       SupportName: "LiuHongliang"

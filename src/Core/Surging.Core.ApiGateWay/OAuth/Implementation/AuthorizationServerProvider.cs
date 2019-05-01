@@ -4,6 +4,7 @@ using Surging.Core.Caching;
 using Surging.Core.CPlatform;
 using Surging.Core.CPlatform.Cache;
 using Surging.Core.CPlatform.Exceptions;
+using Surging.Core.CPlatform.Extensions;
 using Surging.Core.CPlatform.Jwt;
 using Surging.Core.CPlatform.Routing;
 using Surging.Core.ProxyGenerator;
@@ -42,16 +43,21 @@ namespace Surging.Core.ApiGateWay.OAuth
             _jwtTokenProvider = jwtTokenProvider;
         }
 
-        public async Task<string> GenerateTokenCredential(LoginInput input)
+        public async Task<string> GenerateTokenCredential(IDictionary<string, object> rpcParams)
         {
-
-
-            var rpcParams = new Dictionary<string, object>() {
-                { "input", new { input.UserName, input.Password } }
-            };
-
-
-            var loginResult = await _serviceProxyProvider.Invoke<LoginResult>(rpcParams, AppConfig.AuthenticationRoutePath, AppConfig.AuthenticationServiceKey);
+            LoginResult loginResult;
+            if (AppConfig.AuthorizationServiceKey.IsNullOrEmpty())
+            {
+                loginResult = await _serviceProxyProvider.Invoke<LoginResult>(rpcParams, AppConfig.AuthenticationRoutePath);
+            }
+            else
+            {
+                loginResult = await _serviceProxyProvider.Invoke<LoginResult>(rpcParams, AppConfig.AuthenticationRoutePath, AppConfig.AuthenticationServiceKey);
+            }
+            if (loginResult == null)
+            {
+                throw new BusinessException("当前系统无法登陆,请稍后重试");
+            }
             if (loginResult.ResultType == LoginResultType.Fail)
             {
                 throw new AuthException(loginResult.ErrorMessage);

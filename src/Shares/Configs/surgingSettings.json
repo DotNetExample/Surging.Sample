@@ -10,7 +10,7 @@
     "ExecutionTimeoutInMilliseconds": 30000,
     "Protocol": "${Protocol}|None", //HttpTcpNone
     "Libuv": true,
-    "RootPath": "${RootPath}|D:\\userapp",
+    "RootPath": "${RootPath}|./userapp",
     "Ports": {
       "HttpPort": "${HttpPort}|8080",
       "WSPort": "${WSPort}|96"
@@ -21,12 +21,12 @@
     "Packages": [
       {
         "TypeName": "EnginePartModule",
-        "Using": "${UseEngineParts}|DotNettyModule;Log4netModule;ConsulModule;EventBusRabbitMQModule;CachingModule"
+        "Using": "${UseEngineParts}"
       }
     ]
   },
   "Automapper": {
-    "Assemblies": "Hl.*.IApplication;Surging.*.IApplication" // "Surging.*.IApplication;Surging.*.Domain"
+    "Assemblies": "Hl.*.IApplication;Surging.*.IApplication;Hl.*.Common;Surging.*.Common;"
   },
   "dbSetting": {
     "dbType": "${DbType}|MySql", //MySql SqlServer, Oracle, Postgres

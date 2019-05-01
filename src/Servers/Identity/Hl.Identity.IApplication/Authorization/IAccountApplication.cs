@@ -12,8 +12,7 @@ namespace Hl.Identity.IApplication.Authorization
     public interface IAccountApplication : IServiceKey
     {
         [Service(Name = "用户登录接口", EnableAuthorization = false, Date = "2018-12-18")]
-        Task<PayloadOutput> Login(LoginInput input);
+        Task<LoginResult> Login(LoginInput input);
 
-        Task<string> Register(RegisterInput input);
     }
 }
