@@ -12,6 +12,11 @@
 
   <ItemGroup>
     <ProjectReference Include="..\..\..\CommonComponents\Hl.Core\Hl.Core.csproj" />
+    <ProjectReference Include="..\..\BasicData\Hl.BasicData.Common\Hl.BasicData.Common.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="Commons\" />
   </ItemGroup>
 
 </Project>

@@ -60,6 +60,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Hl.BasicData.Application", 
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Hl.BasicData.Domain", "..\src\Servers\BasicData\Hl.BasicData.Domain\Hl.BasicData.Domain.csproj", "{180F147F-423C-4C4F-A306-9638039C9C23}"
 EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Hl.BasicData.Common", "..\src\Servers\BasicData\Hl.BasicData.Common\Hl.BasicData.Common.csproj", "{D3ACECB1-FB9A-47D3-A779-840D95C04653}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -126,6 +128,10 @@ Global
 		{180F147F-423C-4C4F-A306-9638039C9C23}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{180F147F-423C-4C4F-A306-9638039C9C23}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{180F147F-423C-4C4F-A306-9638039C9C23}.Release|Any CPU.Build.0 = Release|Any CPU
+		{D3ACECB1-FB9A-47D3-A779-840D95C04653}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{D3ACECB1-FB9A-47D3-A779-840D95C04653}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{D3ACECB1-FB9A-47D3-A779-840D95C04653}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{D3ACECB1-FB9A-47D3-A779-840D95C04653}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -151,6 +157,7 @@ Global
 		{DE3F87CA-E615-4429-B008-210236AC895A} = {33EF0C7B-5BFA-4865-92F8-27E6AEAA126D}
 		{CCBE3C14-1C3F-4ADC-BC0C-382E2971D81A} = {33EF0C7B-5BFA-4865-92F8-27E6AEAA126D}
 		{180F147F-423C-4C4F-A306-9638039C9C23} = {33EF0C7B-5BFA-4865-92F8-27E6AEAA126D}
+		{D3ACECB1-FB9A-47D3-A779-840D95C04653} = {33EF0C7B-5BFA-4865-92F8-27E6AEAA126D}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {E573E1CD-62D3-4FB5-AE85-74482F0C5D2E}

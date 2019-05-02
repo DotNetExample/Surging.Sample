@@ -1,4 +1,5 @@
 ﻿using System.Threading.Tasks;
+using Hl.BasicData.Common.HlDictionary;
 using Hl.BasicData.Domain;
 using Hl.BasicData.IApplication;
 using Hl.BasicData.IApplication.Dictionary.Dtos;
@@ -6,11 +7,13 @@ using Hl.Core.Validates;
 using Surging.Core.AutoMapper;
 using Surging.Core.CPlatform.Exceptions;
 using Surging.Core.CPlatform.Extensions;
+using Surging.Core.CPlatform.Ioc;
 using Surging.Core.Dapper.Repositories;
 using Surging.Core.ProxyGenerator;
 
 namespace Hl.BasicData.Application
 {
+    [ModuleName("basicdata.v1", Version = "v1")]
     public class DictionaryApplication : ProxyServiceBase, IDictionaryApplication
     {
         public async Task<string> CreateDict(CreateDictInput input)
@@ -45,5 +48,19 @@ namespace Hl.BasicData.Application
             return "新增字典值成功";
         }
 
+        public async Task<HlDictionaryOutput> GetDictValByKey(string dictKey)
+        {
+            if (dictKey.IsNullOrEmpty())
+            {
+                throw new ValidateException("字典Key不允许为空");
+            }
+            var dict = await GetService<IDapperRepository<HlDictionary, long>>().SingleOrDefaultAsync(p => p.Code == dictKey);
+            if (dict == null)
+            {
+                throw new BusinessException($"不存在{dictKey}的记录");
+            }
+
+            return dict.MapTo<HlDictionaryOutput>();
+        }
     }
 }
