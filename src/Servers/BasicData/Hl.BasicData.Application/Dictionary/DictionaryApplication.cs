@@ -18,7 +18,7 @@ namespace Hl.BasicData.Application
     {
         public async Task<string> CreateDict(CreateDictInput input)
         {
-            input.DataAnnotationsCheck().CheckValidResult();
+            input.CheckDataAnnotations().CheckValidResult();
 
             if (input.ParentId != 0)
             {

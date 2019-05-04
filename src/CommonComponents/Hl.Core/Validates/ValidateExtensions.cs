@@ -31,7 +31,7 @@ namespace Hl.Core.Validates
             }
         }
 
-        public static BaseValidation DataAnnotationsCheck(this object instance)
+        public static BaseValidation CheckDataAnnotations(this object instance)
         {
             return new DataAnnotationsValidation(instance);
         }

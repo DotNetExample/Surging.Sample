@@ -7,7 +7,7 @@ CREATE DATABASE hl_basicdata DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_gener
 USE hl_basicdata;
 
 drop table if exists bd_dictionary;
-drop table if exists db_systemconf;
+drop table if exists bd_systemconf;
 
 /*==============================================================*/
 /* Table: bd_dictionary                                         */
@@ -43,9 +43,9 @@ INSERT INTO `hl_basicdata`.`bd_dictionary`(`Id`, `Code`, `Value`, `ParentId`, `S
 
 
 /*==============================================================*/
-/* Table: db_systemconf                                         */
+/* Table: bd_systemconf                                         */
 /*==============================================================*/
-create table db_systemconf
+create table bd_systemconf
 (
    Id                   bigint not null auto_increment comment '主键',
    ConfigName           varchar(50) not null comment '配置名称',
@@ -63,6 +63,6 @@ create table db_systemconf
    primary key (Id)
 );
 
-alter table db_systemconf comment 'db_systemconf';
+alter table bd_systemconf comment 'bd_systemconf';
 
 
