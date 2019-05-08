@@ -37,9 +37,9 @@ docker-compose up -d
 使用mysql数据库管理工具nacicat(或是其他数据链接工具),链接到数据库服务，并执行`sql`目录下的数据库脚本,数据库链接的配置如下：
 ```
 hostname: 127.0.0.1
-port： 13306
-username: root/surging
-password: Surging!P4ss
+port： 23306
+username: root
+password: qwe!P4ss
 
 ```
 ### 4. 运行项目

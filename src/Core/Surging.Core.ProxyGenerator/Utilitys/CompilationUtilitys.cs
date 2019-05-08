@@ -26,10 +26,11 @@ namespace Surging.Core.ProxyGenerator.Utilitys
 #if !NET
             var assemblys = new[]
             {
+                "System",
                 "System.Runtime",
                 "mscorlib",
                 "System.Threading.Tasks",
-                 "System.Collections"
+                "System.Collections"
             };
             references = assemblys.Select(i => MetadataReference.CreateFromFile(Assembly.Load(new AssemblyName(i)).Location)).Concat(references);
 #endif

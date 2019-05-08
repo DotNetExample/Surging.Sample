@@ -1,4 +1,5 @@
 ﻿using Hl.Core.Validates;
+using Hl.Identity.Domain.Authorization;
 using Hl.Identity.Domain.Authorization.Users;
 using Hl.Identity.IApplication.Authorization;
 using Hl.Identity.IApplication.Authorization.Dtos;
@@ -18,19 +19,45 @@ namespace Hl.Identity.Application.Authorization
     public class AccountApplication : ProxyServiceBase, IAccountApplication
     {
         private readonly UserManager _userManager;
+        private readonly LoginManager _loginManager;
 
-
-        public AccountApplication(UserManager userManager)
+        public AccountApplication(UserManager userManager,
+            LoginManager loginManager)
         {
             _userManager = userManager;
+            _loginManager = loginManager;
         }
 
         public async Task<LoginResult> Login(LoginInput input)
         {
-            return new LoginResult() {
-                ResultType = LoginResultType.Success,
-                PayLoad = new Dictionary<string, object>() { { "userId", 1} },
-            };
+            LoginResult loginResult = null;
+            try
+            {
+                loginResult = new LoginResult()
+                {
+                    ResultType = LoginResultType.Success,
+                    PayLoad = await _loginManager.Login(input.UserName, input.Password)
+                };
+
+            }
+            catch (AuthException ex)
+            {
+                loginResult = new LoginResult()
+                {
+                    ResultType = LoginResultType.Fail,
+                    ErrorMessage = ex.GetExceptionMessage()
+                };
+            }
+            catch (Exception ex)
+            {
+                loginResult = new LoginResult()
+                {
+                    ResultType = LoginResultType.Error,
+                    ErrorMessage = ex.GetExceptionMessage()
+                };
+            }
+
+            return loginResult;
         }
 
     }
