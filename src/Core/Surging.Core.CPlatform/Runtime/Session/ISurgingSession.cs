@@ -1,7 +1,7 @@
 ﻿
 namespace Surging.Core.CPlatform.Runtime.Session
 {
-    public interface ISrcpSession
+    public interface ISurgingSession
     {
         long? UserId { get; }
 

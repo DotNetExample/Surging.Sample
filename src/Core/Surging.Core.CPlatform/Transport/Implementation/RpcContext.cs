@@ -34,21 +34,23 @@ namespace Surging.Core.CPlatform.Transport.Implementation
             this.contextParameters = contextParameters;
         }
 
-        private static ThreadLocal<RpcContext> rpcContextThreadLocal = new ThreadLocal<RpcContext>(() =>
-        {
-            RpcContext context = new RpcContext();
-            context.SetContextParameters(new ConcurrentDictionary<string, object>());
-            return context;
-        });
+        private static AsyncLocal<RpcContext> rpcContextAsyncLocal = new AsyncLocal<RpcContext>();
 
         public static RpcContext GetContext()
         {
-            return rpcContextThreadLocal.Value;
+            var context = rpcContextAsyncLocal.Value;
+            if (context == null)
+            {
+                context = new RpcContext();
+                context.SetContextParameters(new ConcurrentDictionary<string, object>());
+                rpcContextAsyncLocal.Value = context;
+            }
+            return rpcContextAsyncLocal.Value;
         }
 
         public static void RemoveContext()
         {
-            rpcContextThreadLocal.Dispose();
+            rpcContextAsyncLocal.Value = null;
         }
 
         private RpcContext()

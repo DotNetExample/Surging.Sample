@@ -4,7 +4,9 @@
   //"ThirdPartyAuthenticationRoutePath": "api/account/authentication",
   "AuthorizationRoutePath": "v1/api/authorize",
   "AuthorizationServiceKey": "",
-  "WhiteList": [],
+  "WhiteList": [
+
+  ],
   "CacheMode": "ddlCache.Redis",
   "JwtConfig": {
     "Iss": "hl",

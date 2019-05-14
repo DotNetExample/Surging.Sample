@@ -8,6 +8,7 @@ using Surging.Core.CPlatform.Messages;
 using Surging.Core.CPlatform.Routing;
 using Surging.Core.CPlatform.Serialization;
 using Surging.Core.CPlatform.Transport;
+using Surging.Core.CPlatform.Transport.Implementation;
 using Surging.Core.CPlatform.Utilities;
 using Surging.Core.KestrelHttpServer.Extensions;
 using Surging.Core.KestrelHttpServer.Internal;
@@ -73,8 +74,9 @@ namespace Surging.Core.KestrelHttpServer
                     if (AppConfig.SwaggerOptions.Authorization.EnableAuthorization && commandInfo.ServiceDescriptor.EnableAuthorization())
                     {
                         var authorizationServerProvider = ServiceLocator.GetService<IAuthorizationServerProvider>();
-                        var payload = JsonConvert.DeserializeObject(await authorizationServerProvider.GetPayloadString(context.Request.GetTokenFromHeader()));
-                        bodyParmeters.Add("payload", payload);
+                        var payload = authorizationServerProvider.GetPayload(context.Request.GetTokenFromHeader());
+                        bodyParmeters.Add("payload", _serializer.Serialize(payload, true));
+                        RpcContext.GetContext().SetAttachment("payload", _serializer.Serialize(payload, true));
                     }
                     await Received(sender, new TransportMessage(new HttpMessage
                     {
@@ -88,8 +90,9 @@ namespace Surging.Core.KestrelHttpServer
                     if (AppConfig.SwaggerOptions.Authorization.EnableAuthorization && commandInfo.ServiceDescriptor.EnableAuthorization())
                     {
                         var authorizationServerProvider = ServiceLocator.GetService<IAuthorizationServerProvider>();
-                        var payload = JsonConvert.DeserializeObject(await authorizationServerProvider.GetPayloadString(context.Request.GetTokenFromHeader()));
-                        parameters.Add("payload", payload);
+                        var payload = authorizationServerProvider.GetPayload(context.Request.GetTokenFromHeader());
+                        parameters.Add("payload", _serializer.Serialize(payload,true));
+                        RpcContext.GetContext().SetAttachment("payload", _serializer.Serialize(payload, true));
                     }
                     await Received(sender, new TransportMessage(new HttpMessage
                     {

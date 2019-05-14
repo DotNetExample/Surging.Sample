@@ -15,11 +15,21 @@ namespace Surging.Core.CPlatform.Runtime.Session
         {
             get
             {
-                dynamic payloadString = RpcContext.GetContext().GetAttachment(PayloadKey);
-                if (!string.IsNullOrEmpty(payloadString))
+                object payload = RpcContext.GetContext().GetAttachment(PayloadKey);
+                if (payload != null)
                 {
-                    dynamic payload = JsonConvert.DeserializeObject(payloadString);
-                    return payload.userId ?? payload.UserId;
+                    if (payload.GetType() == typeof(string))
+                    {
+                        dynamic payloadJObject = JsonConvert.DeserializeObject(payload.ToString());
+                        return payloadJObject.userId ?? payloadJObject.UserId;
+                    }
+                    else
+                    {
+                        dynamic payloadJObject = payload;
+                        return payloadJObject.userId ?? payloadJObject.UserId;
+                    }
+                    
+                    
                 }
                 return null;
             }
@@ -29,13 +39,22 @@ namespace Surging.Core.CPlatform.Runtime.Session
         {
             get
             {
-                var payloadString = (string)RpcContext.GetContext().GetAttachment(PayloadKey);
-                if (!string.IsNullOrEmpty(payloadString))
+                object payload = RpcContext.GetContext().GetAttachment(PayloadKey);
+                if (payload != null)
                 {
-                    dynamic payload = JsonConvert.DeserializeObject(payloadString);
-                    return payload.userName ?? payload.UserName;
-                }
+                    if (payload.GetType() == typeof(string))
+                    {
+                        dynamic payloadJObject = JsonConvert.DeserializeObject(payload.ToString());
+                        return payloadJObject.userName ?? payloadJObject.UserName;
+                    }
+                    else
+                    {
+                        dynamic payloadJObject = payload;
+                        return payloadJObject.userName ?? payloadJObject.UserName;
+                    }
 
+
+                }
                 return null;
             }
         }

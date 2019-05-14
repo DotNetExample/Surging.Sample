@@ -1,6 +1,7 @@
 ﻿using Surging.Core.Caching;
 using Surging.Core.CPlatform;
 using Surging.Core.CPlatform.Cache;
+using Surging.Core.CPlatform.Jwt;
 using Surging.Core.CPlatform.Routing;
 using Surging.Core.ProxyGenerator;
 using System;
@@ -15,7 +16,7 @@ namespace Surging.Core.KestrelHttpServer.Middlewares
     {
         private readonly IServiceProxyProvider _serviceProxyProvider;//务代理
         private readonly IServiceRouteProvider _serviceRouteProvider;//用务路由
-        private readonly ICacheProvider _cacheProvider;//缓存
+        private readonly IJwtTokenProvider _jwtTokenProvider;
 
         /// <summary>
         /// 安全验证服务提供类构造
@@ -23,11 +24,13 @@ namespace Surging.Core.KestrelHttpServer.Middlewares
         /// <param name="serviceProxyProvider">服务代理</param>
         /// <param name="serviceRouteProvider">用务路由</param>
         public AuthorizationServerProvider(IServiceProxyProvider serviceProxyProvider
-           , IServiceRouteProvider serviceRouteProvider)
+           , IServiceRouteProvider serviceRouteProvider,
+            IJwtTokenProvider jwtTokenProvider)
         {
             _serviceProxyProvider = serviceProxyProvider;
             _serviceRouteProvider = serviceRouteProvider;
-            _cacheProvider = CacheContainer.GetService<ICacheProvider>(AppConfig.SwaggerOptions.Authorization.CacheMode);
+            _jwtTokenProvider = jwtTokenProvider;
+            
         }
 
         public async Task<bool> Authorize(string apiPath, Dictionary<string, object> parameters)
@@ -48,14 +51,9 @@ namespace Surging.Core.KestrelHttpServer.Middlewares
                 AppConfig.SwaggerOptions.Authorization.AuthorizationServiceKey ?? "");
         }
 
-        public Task<string> GetPayloadString(string token)
+        public IDictionary<string, object> GetPayload(string token)
         {
-            throw new NotImplementedException();
-        }
-
-        public Task<bool> ValidateClientAuthentication(string token)
-        {
-            throw new NotImplementedException();
+            return _jwtTokenProvider.GetPayLoad(token,AppConfig.SwaggerOptions.Authorization.SecretKey);
         }
     }
 }

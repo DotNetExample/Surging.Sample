@@ -6,7 +6,7 @@ namespace Hl.BasicData.Domain
     {
         public HlDictionary()
         {
-            IsSysPreSet = false;
+            SysPreSet = false;
         }
 
         public string Code { get; set; }
@@ -21,6 +21,6 @@ namespace Hl.BasicData.Domain
 
         public bool HasChild { get; set; }
 
-        public bool IsSysPreSet { get; set; }
+        public bool SysPreSet { get; set; }
     }
 }

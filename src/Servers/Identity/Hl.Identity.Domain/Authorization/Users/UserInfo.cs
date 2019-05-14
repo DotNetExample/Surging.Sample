@@ -10,6 +10,8 @@ namespace Hl.Identity.Domain.Authorization.Users
             //Roles = new List<UserRole>();
 
             Status = Status.Valid;
+            Locked = false;
+            LoginFailCount = 0;
         }
 
         public long EmployeeId { get; set; }
@@ -22,6 +24,9 @@ namespace Hl.Identity.Domain.Authorization.Users
 
         public string Password { get; set; }
 
+        public int LoginFailCount { get; set; }
+
+        public bool Locked { get; set; }
 
         public Status Status { get; set; }
 

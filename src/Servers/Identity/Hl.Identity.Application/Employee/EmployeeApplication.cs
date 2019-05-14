@@ -27,8 +27,8 @@ namespace Hl.Identity.Application.Employee
             }
 
             var exsitUserInfo = await GetService<IDapperRepository<UserInfo, long>>().FirstOrDefaultAsync(p => p.UserName == input.UserName
-          || p.Email == input.Email
-          || p.Phone == input.Phone);
+            || p.Email == input.Email
+            || p.Phone == input.Phone);
             if (exsitUserInfo != null)
             {
                 throw new BusinessException("已经存在该员工信息,请检查员工账号信息");

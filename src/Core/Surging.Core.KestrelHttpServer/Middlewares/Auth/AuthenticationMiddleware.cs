@@ -6,6 +6,7 @@ using Surging.Core.CPlatform.Exceptions;
 using Surging.Core.CPlatform.Jwt;
 using Surging.Core.CPlatform.Messages;
 using Surging.Core.CPlatform.Routing;
+using Surging.Core.CPlatform.Serialization;
 using Surging.Core.CPlatform.Utilities;
 using Surging.Core.KestrelHttpServer.Extensions;
 using System;
@@ -18,10 +19,12 @@ namespace Surging.Core.KestrelHttpServer.Middlewares
     public class AuthenticationMiddleware
     {
         private readonly RequestDelegate _next;
+        private readonly ISerializer<string> _jsonSerializer;
 
         public AuthenticationMiddleware(RequestDelegate next)
         {
             _next = next;
+            _jsonSerializer = ServiceLocator.GetService<ISerializer<string>>();
         }
 
         public async Task InvokeAsync(HttpContext context)
@@ -35,19 +38,19 @@ namespace Surging.Core.KestrelHttpServer.Middlewares
             {
                 var noAuthResponseContent = new HttpResultMessage()
                 { IsSucceed = false, Message = ex.Message, StatusCode = StatusCode.UnAuthentication };
-                await context.Response.WriteAsync(JsonConvert.SerializeObject(noAuthResponseContent));
+                await context.Response.WriteAsync(_jsonSerializer.Serialize(noAuthResponseContent,true));
             }
             catch (CPlatformException ex)
             {
                 var resultMessage = new HttpResultMessage()
                 { IsSucceed = false, Message = ex.Message, StatusCode = StatusCode.CPlatformError };
-                await context.Response.WriteAsync(JsonConvert.SerializeObject(resultMessage));
+                await context.Response.WriteAsync(_jsonSerializer.Serialize(resultMessage,true));
             }
             catch (Exception ex)
             {
                 var resultMessage = new HttpResultMessage()
                 { IsSucceed = false, Message = ex.StackTrace, StatusCode = StatusCode.RequestError };
-                await context.Response.WriteAsync(JsonConvert.SerializeObject(resultMessage));
+                await context.Response.WriteAsync(_jsonSerializer.Serialize(resultMessage,true));
             }
 
         }
@@ -79,7 +82,7 @@ namespace Surging.Core.KestrelHttpServer.Middlewares
                     {
                         var apiPath = context.Request.Path.ToString().TrimStart('/');
                         var authorizationServerProvider = ServiceLocator.GetService<IAuthorizationServerProvider>();
-                        await authorizationServerProvider.Authorize(apiPath, new Dictionary<string, object>()
+                        await authorizationServerProvider.Authorize(AppConfig.SwaggerOptions.Authorization.AuthorizationRoutePath, new Dictionary<string, object>()
                         {
                             {"apiPath", apiPath}
                         });

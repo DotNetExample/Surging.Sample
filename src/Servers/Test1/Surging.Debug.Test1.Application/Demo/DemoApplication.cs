@@ -1,4 +1,5 @@
 ﻿using Surging.Core.AutoMapper;
+using Surging.Core.CPlatform.Runtime.Session;
 using Surging.Core.Dapper.Repositories;
 using Surging.Core.ProxyGenerator;
 using Surging.Debug.Test1.Domain.Demo.Entities;
@@ -13,6 +14,13 @@ namespace Surging.Debug.Test1.Application.Demo
 {
     public class DemoApplication : ProxyServiceBase, IDemoApplication
     {
+        private readonly ISurgingSession _surgingSession;
+
+        public DemoApplication()
+        {
+            _surgingSession = NullSurgingSession.Instance;
+        }
+
 
         public async Task<string> GetUserName(QueryUserInput input)
         {
@@ -37,15 +45,18 @@ namespace Surging.Debug.Test1.Application.Demo
 
         public async Task<string> CreateUser()
         {
-            var userRepositroy = GetService<IDapperRepository<UserInfo, long>>();
-            await userRepositroy.InsertAsync(new UserInfo()
-            {
-                Email = "1111",
-                Password = "123qwe",
-                EmployeeId = 1,
-                Phone = "1111",
-                UserName = "sdsds"
-            });
+            //var userRepositroy = GetService<IDapperRepository<UserInfo, long>>();
+            //await userRepositroy.InsertAsync(new UserInfo()
+            //{
+            //    Email = "1111",
+            //    Password = "123qwe",
+            //    EmployeeId = 1,
+            //    Phone = "1111",
+            //    UserName = "sdsds"
+            //});
+
+            var loginUserId = _surgingSession.UserId;
+
             return "OK";
         }
     }

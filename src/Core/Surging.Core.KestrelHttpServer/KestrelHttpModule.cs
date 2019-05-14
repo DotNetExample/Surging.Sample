@@ -31,18 +31,17 @@ namespace Surging.Core.KestrelHttpServer
             builder.RegisterType(typeof(JwtTokenProvider)).As(typeof(IJwtTokenProvider));
             var section = CPlatform.AppConfig.GetSection("Swagger");
             if (section.Exists())
-                if (section.Exists())
+            {
+                AppConfig.SwaggerOptions = section.Get<Info>();
+                if (AppConfig.SwaggerOptions.Authorization == null)
                 {
-                    AppConfig.SwaggerOptions = section.Get<Info>();
-                    if (AppConfig.SwaggerOptions.Authorization == null)
-                    {
-                        AppConfig.SwaggerOptions.Authorization = new Authorization() { EnableAuthorization = false };
-                    }
-                    if (AppConfig.SwaggerOptions.Authorization.EnableAuthorization)
-                    {
-                        builder.RegisterType(typeof(AuthorizationServerProvider)).As(typeof(IAuthorizationServerProvider));
-                    }
+                    AppConfig.SwaggerOptions.Authorization = new Authorization() { EnableAuthorization = false };
                 }
+                if (AppConfig.SwaggerOptions.Authorization.EnableAuthorization)
+                {
+                    builder.RegisterType(typeof(AuthorizationServerProvider)).As(typeof(IAuthorizationServerProvider));
+                }
+            }
             builder.RegisterType(typeof(DefaultServiceSchemaProvider)).As(typeof(IServiceSchemaProvider)).SingleInstance();
 
             builder.RegisterType(typeof(HttpExecutor)).As(typeof(IServiceExecutor))

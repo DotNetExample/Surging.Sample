@@ -42,11 +42,10 @@
       "Email": "1029765111@qq.com"
     },
     "Authorization": {
-      "EnableAuthorization": false,
-      "CacheMode": "ddlCache.Redis",
-      "AccessTokenExpire": 100,
-      "AuthorizationRoutePath": "",
-      "AuthorizationServiceKey": ""
+      "EnableAuthorization": "${EnableAuthorization}|false",
+      "SecretKey": "${SecretKey}",
+      "AuthorizationRoutePath": "${AuthorizationRoutePath}",
+      "AuthorizationServiceKey": "${AuthorizationServiceKey}"
     }
   },
   "Logging": {

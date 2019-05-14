@@ -8,7 +8,7 @@ namespace Hl.BasicData.Domain
     {
         public SystemConfClassMapper()
         {
-            Table("db_systemconf");
+            Table("bd_systemconf");
             AutoMap();
         }
     }

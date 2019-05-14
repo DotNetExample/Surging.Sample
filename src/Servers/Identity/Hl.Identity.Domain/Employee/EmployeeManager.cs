@@ -30,7 +30,8 @@ namespace Hl.Identity.Domain.Employee
                     Email = employee.Email,
                     EmployeeId = employeeId,
                     Phone = employee.Phone,
-                    UserName = employee.UserName
+                    UserName = employee.UserName,
+
                 };
                 var rpcParams = new Dictionary<string, object>() { { "confName", IdentityConstants.SysConfPwdModeName } };
                 var pwdConfig = await GetService<IServiceProxyProvider>().Invoke<GetSystemConfOutput>(rpcParams, ApiConsts.BasicData.GetSysConfApi);

@@ -12,6 +12,6 @@ namespace Hl.BasicData.Domain
 
         public int Seq { get; set; }
 
-        public bool IsSysPreSet { get; set; }
+        public bool SysPreSet { get; set; }
     }
 }

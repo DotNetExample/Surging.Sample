@@ -16,5 +16,9 @@ services:
       SwaggerDes: "用于调式源代码的服务组件"
       SupportName: "LiuHongliang"
       SupportEmail: 1029765111@qq.com
+      EnableAuthorization: ${ENABLE_AUTHORIZATION:-false}
+      SecretKey: ${SECRETKEY}
+      AuthorizationRoutePath: ${AUTHORIZATION_ROUTE}
+      AuthorizationServiceKey: ${AUTHORIZATION_SERVICEKEY}
     ports:
       - "18070:8080"

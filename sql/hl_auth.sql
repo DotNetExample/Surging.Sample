@@ -75,6 +75,9 @@ create table auth_employee
 
 alter table auth_employee comment '职员表';
 
+INSERT INTO `hl_auth`.`auth_employee`(`Id`, `UserName`, `ChineseName`, `Email`, `Phone`, `Gender`, `Birth`, `NativePlace`, `Address`, `Folk`, `PoliticalStatus`, `GraduateInstitutions`, `Education`, `Major`, `Resume`, `Memo`, `Status`, `CreateBy`, `CreateTime`, `UpdateBy`, `UpdateTime`, `IsDeleted`, `DeleteBy`, `DeleteTime`) VALUES (1, 'liuhll', 'LiuHongliang', '1029765111@qq.com', '13128729111', 0, '1989-01-15', '云南保山', '广东深圳', '汉族', 0, '云南师大', '本科', '计算机科学与技术', '', '', 1, NULL, '2019-05-14 15:36:34', NULL, NULL, 0, NULL, NULL);
+
+
 /*==============================================================*/
 /* Table: auth_file                                             */
 /*==============================================================*/
@@ -311,6 +314,8 @@ create table auth_user
    Phone                varchar(22) not null comment '联系电话',
    UserName             varchar(50) not null comment '用户名',
    Password             varchar(100) not null comment '密码',
+   LoginFailCount       int not null comment '登录失败次数',
+   Locked               int not null comment '是否被锁定：0.未锁定；1.锁定',
    Status               int comment '状态',
    CreateBy             bigint comment '创建人',
    CreateTime           datetime comment '创建日期',
@@ -323,6 +328,7 @@ create table auth_user
 );
 
 alter table auth_user comment '用户表';
+
 
 /*==============================================================*/
 /* Table: auth_user_group                                       */
@@ -344,6 +350,7 @@ create table auth_user_group
 );
 
 alter table auth_user_group comment '用户组表';
+INSERT INTO `hl_auth`.`auth_user`(`Id`, `EmployeeId`, `Email`, `Phone`, `UserName`, `Password`, `LoginFailCount`, `Locked`, `Status`, `CreateBy`, `CreateTime`, `UpdateBy`, `UpdateTime`, `IsDeleted`, `DeleteBy`, `DeleteTime`) VALUES (1, 1, '1029765111@qq.com', '13123456789', 'liuhll', '909e74b36a584cb99e9a83636933a39b', 0, 0, 1, NULL, '2019-05-14 15:36:37', NULL, NULL, 0, NULL, NULL);
 
 /*==============================================================*/
 /* Table: auth_user_role                                        */

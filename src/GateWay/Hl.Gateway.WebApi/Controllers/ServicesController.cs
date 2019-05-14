@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection;
 using System.Security.Cryptography;
 using System.Text;
 using System.Threading.Tasks;
@@ -28,16 +29,19 @@ namespace Hl.Gateway.WebApi.Controllers
         private readonly IServiceRouteProvider _serviceRouteProvider;
         private readonly IAuthorizationServerProvider _authorizationServerProvider;
         private readonly IServicePartProvider _servicePartProvider;
+        private readonly ISerializer<string> _serializer;
 
         public ServicesController(IServiceProxyProvider serviceProxyProvider,
             IServiceRouteProvider serviceRouteProvider,
             IAuthorizationServerProvider authorizationServerProvider,
-            IServicePartProvider servicePartProvider)
+            IServicePartProvider servicePartProvider,
+            ISerializer<string> serializer)
         {
             _serviceProxyProvider = serviceProxyProvider;
             _serviceRouteProvider = serviceRouteProvider;
             _authorizationServerProvider = authorizationServerProvider;
             _servicePartProvider = servicePartProvider;
+            _serializer = serializer;
         }
 
         public async Task<ServiceResult<object>> Path([FromServices]IServicePartProvider servicePartProvider, string path, [FromBody]Dictionary<string, object> model)
@@ -66,33 +70,33 @@ namespace Hl.Gateway.WebApi.Controllers
             }
             else
             {
-                if (OnAuthorization(path, model, ref result))
+                if (path == GateWayAppConfig.AuthenticationRoutePath)
                 {
-                    if (path == GateWayAppConfig.AuthenticationRoutePath)
+                    try
                     {
-                        try
+                        var token = await _authorizationServerProvider.GenerateTokenCredential(model);
+                        if (token != null)
                         {
-                            var token = await _authorizationServerProvider.GenerateTokenCredential(model);
-                            if (token != null)
-                            {
-                                result = ServiceResult<object>.Create(true, token);
-                                result.StatusCode = (int)MessageStatusCode.Ok;
-                            }
-                            else
-                            {
-                                result = new ServiceResult<object> { IsSucceed = false, StatusCode = (int)MessageStatusCode.UnAuthentication, Message = "不合法的身份凭证" };
-                            }
-                        }                      
-                        catch (CPlatformException ex)
-                        {
-                            result = new ServiceResult<object> { IsSucceed = false, StatusCode = (int)MessageStatusCode.CPlatformError, Message = ex.Message };
+                            result = ServiceResult<object>.Create(true, token);
+                            result.StatusCode = (int)MessageStatusCode.Ok;
                         }
-                        catch (Exception ex)
+                        else
                         {
-                            result = new ServiceResult<object> { IsSucceed = false, StatusCode = (int)MessageStatusCode.UnKnownError, Message = ex.Message };
+                            result = new ServiceResult<object> { IsSucceed = false, StatusCode = (int)MessageStatusCode.UnAuthentication, Message = "不合法的身份凭证" };
                         }
                     }
-                    else
+                    catch (CPlatformException ex)
+                    {
+                        result = new ServiceResult<object> { IsSucceed = false, StatusCode = (int)MessageStatusCode.CPlatformError, Message = ex.Message };
+                    }
+                    catch (Exception ex)
+                    {
+                        result = new ServiceResult<object> { IsSucceed = false, StatusCode = (int)MessageStatusCode.UnKnownError, Message = ex.Message };
+                    }
+                }
+                else
+                {
+                    if (OnAuthorization(path, model, ref result))
                     {
                         try
                         {
@@ -120,7 +124,9 @@ namespace Hl.Gateway.WebApi.Controllers
                             return new ServiceResult<object> { IsSucceed = false, StatusCode = (int)MessageStatusCode.UnKnownError, Message = ex.Message };
                         }
                     }
+
                 }
+
             }
 
             return result;
@@ -134,13 +140,13 @@ namespace Hl.Gateway.WebApi.Controllers
         }
         private bool OnAuthorization(string path, Dictionary<string, object> model, ref ServiceResult<object> result)
         {
-            bool isSuccess = true;
-            //var route = _serviceRouteProvider.GetRouteByPath(path).Result;
-            //if (route.ServiceDescriptor.EnableAuthorization())
-            //{
-            //    isSuccess = route.ServiceDescriptor.AuthType() == AuthorizationType.JWT.ToString() 
-            //        ? ValidateJwtAuthentication(route, model, ref result) : ValidateAppSecretAuthentication(route, path, model, ref result);
-            //}
+            bool isSuccess = false;
+            var route = _serviceRouteProvider.GetRouteByPath(path).Result;
+            if (route.ServiceDescriptor.EnableAuthorization())
+            {
+                isSuccess = route.ServiceDescriptor.AuthType() == AuthorizationType.JWT.ToString()
+                    ? ValidateJwtAuthentication(route, model, ref result) : ValidateAppSecretAuthentication(route, path, model, ref result);
+            }
 
             //if (isSuccess)
             //{
@@ -163,6 +169,78 @@ namespace Hl.Gateway.WebApi.Controllers
             //        }
             //    }
             //}
+            return isSuccess;
+        }
+
+        private bool ValidateAppSecretAuthentication(ServiceRoute route, string path, Dictionary<string, object> model, ref ServiceResult<object> result)
+        {
+            bool isSuccess = true;
+            DateTime time;
+            var author = HttpContext.Request.Headers["Authorization"];
+
+            if (!string.IsNullOrEmpty(path) && model.ContainsKey("timeStamp") && author.Count > 0)
+            {
+                if (DateTime.TryParse(model["timeStamp"].ToString(), out time))
+                {
+                    var seconds = (DateTime.Now - time).TotalSeconds;
+                    if (seconds <= 3560 && seconds >= 0) //:todo 配置token的有效期
+                    {
+                        if (GetMD5($"{route.ServiceDescriptor.Token}{time.ToString("yyyy-MM-dd hh:mm:ss") }") != author.ToString())
+                        {
+                            result = new ServiceResult<object> { IsSucceed = false, StatusCode = (int)MessageStatusCode.UnAuthentication, Message = "不合法的身份凭证" };
+                            isSuccess = false;
+                        }
+                    }
+                    else
+                    {
+                        result = new ServiceResult<object> { IsSucceed = false, StatusCode = (int)MessageStatusCode.UnAuthentication, Message = "不合法的身份凭证" };
+                        isSuccess = false;
+                    }
+                }
+                else
+                {
+                    result = new ServiceResult<object> { IsSucceed = false, StatusCode = (int)MessageStatusCode.UnAuthentication, Message = "不合法的身份凭证" };
+                    isSuccess = false;
+                }
+            }
+            else
+            {
+                result = new ServiceResult<object> { IsSucceed = false, StatusCode = (int)MessageStatusCode.RequestError, Message = "不合法的身份凭证" };
+                isSuccess = false;
+            }
+            return isSuccess;
+        }
+
+        public bool ValidateJwtAuthentication(ServiceRoute route, Dictionary<string, object> model, ref ServiceResult<object> result)
+        {
+            bool isSuccess = true;
+            var author = HttpContext.Request.Headers["Authorization"].ToString();
+            if (author.StartsWith("Bearer "))
+            {
+                author = author.Substring(7);
+            }
+            if (!string.IsNullOrEmpty(author))
+            {
+                isSuccess = _authorizationServerProvider.ValidateClientAuthentication(author).Result;
+                if (!isSuccess)
+                {
+                    result = new ServiceResult<object> { IsSucceed = false, StatusCode = (int)MessageStatusCode.UnAuthentication, Message = "不合法的身份凭证" };
+                }
+                else
+                {
+                    var keyValue = model.FirstOrDefault();
+                    if (!(keyValue.Value is IConvertible) || !typeof(IConvertible).GetTypeInfo().IsAssignableFrom(keyValue.Value.GetType()))
+                    {
+                        var payload = _authorizationServerProvider.GetPayLoad(author);
+                        RpcContext.GetContext().SetAttachment("payload", payload);
+                    }
+                }
+            }
+            else
+            {
+                result = new ServiceResult<object> { IsSucceed = false, StatusCode = (int)MessageStatusCode.UnAuthentication, Message = "请先登录系统" };
+                isSuccess = false;
+            }
             return isSuccess;
         }
 
