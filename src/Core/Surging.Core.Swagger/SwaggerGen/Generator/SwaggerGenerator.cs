@@ -66,10 +66,32 @@ namespace Surging.Core.SwaggerGen
                 Paths = CreatePathItems(entry, schemaRegistry),
                 Definitions = schemaRegistry.Definitions,
                 SecurityDefinitions = _options.SecurityDefinitions.Any() ? _options.SecurityDefinitions : null,
-                Security = _options.SecurityRequirements.Any() ? _options.SecurityRequirements : null
+                Security = _options.SecurityRequirements.Any() ? _options.SecurityRequirements : null,
+                Tags = CreateTags(entry)
             };
 
             return swaggerDoc;
+        }
+
+        private IList<Tag> CreateTags(IEnumerable<ServiceEntry> entries)
+        {
+            var tags = new List<Tag>();
+            var apiIdentifiers = entries.GroupBy(apiDesc =>
+            {
+                var pathSegments = apiDesc.Descriptor.RoutePath.Split("/");
+                if (pathSegments.Length > 2)
+                {
+                    return pathSegments[pathSegments.Length - 2];                    
+                }
+                return pathSegments[0];
+            }).Select(p => p.Key);
+            foreach (var apiIdentifier in apiIdentifiers)
+            {
+                tags.Add(new Tag() {
+                    Name = apiIdentifier                   
+                });
+            }
+            return tags;
         }
 
         private Dictionary<string, PathItem> CreatePathItems(
@@ -192,6 +214,7 @@ namespace Surging.Core.SwaggerGen
                 Parameters = CreateParameters(serviceEntry, methodInfo, schemaRegistry),
                 Deprecated = isDeprecated ? true : (bool?)null,
                 Responses = CreateResponses(serviceEntry, methodInfo, schemaRegistry),
+                Tags = GetTagsFormServiceEntry(serviceEntry)
             };
 
             var filterContext = new OperationFilterContext(
@@ -204,6 +227,20 @@ namespace Surging.Core.SwaggerGen
                 filter.Apply(operation, filterContext);
             }
             return operation;
+        }
+
+        private IList<string> GetTagsFormServiceEntry(ServiceEntry serviceEntry)
+        {
+            var tags = new List<string>();
+            var pathSegments = serviceEntry.Descriptor.RoutePath.Split("/");
+            if (pathSegments.Length > 2)
+            {
+                tags.Add(pathSegments[pathSegments.Length - 2]);              
+            }
+            else {
+                tags.Add(pathSegments[0]);
+            }
+            return tags;
         }
 
         private Operation CreateOperation(

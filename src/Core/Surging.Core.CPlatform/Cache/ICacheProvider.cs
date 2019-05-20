@@ -44,5 +44,9 @@ namespace Surging.Core.CPlatform.Cache
 
         long DefaultExpireTime { get; set; }
         string KeySuffix { get; set; }
+
+        void RemoveWithPrefix(string prefix);
+
+        void Clear();
     }
 }

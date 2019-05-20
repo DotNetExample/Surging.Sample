@@ -151,6 +151,17 @@ namespace Surging.Core.Caching.NetCache
             return Task.FromResult<bool>(true);
         }
 
+        public async void RemoveWithPrefix(string prefix)
+        {
+            throw new NotImplementedException();
+        }
+
+        public void Clear()
+        {
+            throw new NotImplementedException();
+        }
+
+
         #endregion 构造函数
 
         #region 属性
@@ -193,6 +204,7 @@ namespace Surging.Core.Caching.NetCache
         {
             return string.IsNullOrEmpty(KeySuffix) ? key : string.Format("_{0}_{1}", KeySuffix, key);
         }
+
 
         #endregion 私有变量
     }

@@ -1,9 +1,8 @@
-﻿using Surging.Core.CPlatform.Ioc;
+﻿using Surging.Core.CPlatform.Cache;
+using Surging.Core.CPlatform.Ioc;
 using Surging.Core.CPlatform.Runtime.Server.Implementation.ServiceDiscovery.Attributes;
+using Surging.Core.System.Intercept;
 using Surging.Debug.Test1.IApplication.Demo.Dtos;
-using System;
-using System.Collections.Generic;
-using System.Text;
 using System.Threading.Tasks;
 
 namespace Surging.Debug.Test1.IApplication.Demo
@@ -13,7 +12,8 @@ namespace Surging.Debug.Test1.IApplication.Demo
     {
         Task<string> GetUserName(QueryUserInput input);
 
-        Task<string> GetUserId(string id);
+        [InterceptMethod(CachingMethod.Get, Key = "GetUser_id_{0}", Mode = CacheTargetType.Redis)]
+        Task<string> GetUserId([CacheKey(1)]string id);
 
         Task CreatDemo(DemoInput input);
 

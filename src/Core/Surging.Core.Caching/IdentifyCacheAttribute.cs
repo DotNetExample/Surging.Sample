@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Surging.Core.CPlatform.Cache;
+using System;
 
 namespace Surging.Core.Caching
 {

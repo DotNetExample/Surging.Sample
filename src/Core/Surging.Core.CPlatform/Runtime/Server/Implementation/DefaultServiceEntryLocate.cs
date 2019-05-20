@@ -35,8 +35,10 @@ namespace Surging.Core.CPlatform.Runtime.Server.Implementation
         public ServiceEntry Locate(HttpMessage httpMessage)
         {
             string routePath = httpMessage.RoutePath;
-            if (httpMessage.RoutePath.AsSpan().IndexOf("/") == -1)
-                routePath = $"/{routePath}";
+            if (routePath.StartsWith("/"))
+            {
+                routePath = routePath.TrimStart('/');
+            }
             var serviceEntries = _serviceEntryManager.GetEntries();
             return serviceEntries.SingleOrDefault(i => i.RoutePath == routePath);
         }

@@ -146,6 +146,10 @@ namespace Surging.Core.ProxyGenerator.Implementation
 
         private bool IsSetCacheInterceptMethod(IInvocation invocation, ServiceCommand command)
         {
+            if (invocation == null)
+            {
+                return false;
+            }
             var cacheInvocation = invocation as ICacheInvocation;
             if (cacheInvocation == null)
             {

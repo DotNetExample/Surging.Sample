@@ -1,8 +1,11 @@
 ﻿using Hl.BasicData.Common.HlDictionary;
+using Hl.BasicData.Domain;
 using Hl.BasicData.IApplication.Dictionary.Dtos;
 using Hl.Core.Maintenance;
+using Surging.Core.Caching;
 using Surging.Core.CPlatform.Ioc;
 using Surging.Core.CPlatform.Runtime.Server.Implementation.ServiceDiscovery.Attributes;
+using Surging.Core.System.Intercept;
 using System;
 using System.Threading.Tasks;
 

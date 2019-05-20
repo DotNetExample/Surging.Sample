@@ -1,4 +1,5 @@
 ﻿using Surging.Core.Caching.HashAlgorithms;
+using Surging.Core.CPlatform.Cache;
 using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;

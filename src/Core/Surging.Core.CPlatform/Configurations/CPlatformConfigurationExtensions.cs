@@ -1,5 +1,6 @@
 ﻿using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.FileProviders;
+using Surging.Core.CPlatform.Cache;
 using Surging.Core.CPlatform.Utilities;
 using System.IO;
 
@@ -54,7 +55,15 @@ namespace Surging.Core.CPlatform.Configurations
                 AppConfig.ServerOptions = AppConfig.Configuration.Get<SurgingServerOptions>();
                 var section = AppConfig.Configuration.GetSection("Surging");
                 if (section.Exists())
+                {
                     AppConfig.ServerOptions = AppConfig.Configuration.GetSection("Surging").Get<SurgingServerOptions>();
+                }
+                section = AppConfig.Configuration.GetSection("CacheSection");
+                if (section.Exists())
+                {
+                    AppConfig.CacheSectionOptions = AppConfig.Configuration.GetSection("CacheSection").Get<CacheSectionOptions>();
+                }
+            
             }
             return builder;
         }

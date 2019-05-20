@@ -18,6 +18,8 @@ services:
       SupportEmail: 1029765111@qq.com
       EnableAuthorization: ${ENABLE_AUTHORIZATION:-false}
       SecretKey: ${SECRETKEY}
+      AuthorizationRoutePath: ${AUTHORIZATION_ROUTE}
+      AuthorizationServiceKey: ${AUTHORIZATION_SERVICEKEY}
     ports:
       - "18087:8080"
   hlservice.identity:

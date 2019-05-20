@@ -33,6 +33,7 @@ namespace Surging.Debug.Test1.Application.Demo
 
         public async Task<string> GetUserId(string id)
         {
+            var c = Surging.Core.CPlatform.AppConfig.CacheSectionOptions;
             return id;
         }
 

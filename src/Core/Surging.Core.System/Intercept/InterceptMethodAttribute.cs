@@ -1,4 +1,5 @@
 ﻿using Surging.Core.Caching;
+using Surging.Core.CPlatform.Cache;
 using System;
 
 namespace Surging.Core.System.Intercept

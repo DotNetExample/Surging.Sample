@@ -15,7 +15,7 @@
       "HttpPort": "${HttpPort}|8080",
       "WSPort": "${WSPort}|96"
     },
-    "RequestCacheEnabled": false,
+    "RequestCacheEnabled": true,
     "Environment": "${Environment}|Development",
     "ForceDisplayStackTrace": "${ForceDisplayStackTrace}|false",
     "Packages": [
@@ -24,6 +24,11 @@
         "Using": "${UseEngineParts}"
       }
     ]
+  },
+  "CacheSection": {
+    "IsEnableRepositoryCache": true,
+    "CacheSectionName": "ddlCache",
+    "CacheType": "Redis"
   },
   "Automapper": {
     "Assemblies": "Hl.*.IApplication;Surging.*.IApplication;Hl.*.Common;Surging.*.Common;"
@@ -46,7 +51,11 @@
       "SecretKey": "${SecretKey}",
       "AuthorizationRoutePath": "${AuthorizationRoutePath}",
       "AuthorizationServiceKey": "${AuthorizationServiceKey}"
-    }
+    },
+    "AnnotationXmlDir": "/app/annotationxmldir",
+    "DtoXmls": [
+      "Hl.Core.xml"
+    ]
   },
   "Logging": {
     "Debug": {

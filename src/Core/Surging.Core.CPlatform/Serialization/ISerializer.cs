@@ -15,7 +15,7 @@ namespace Surging.Core.CPlatform.Serialization
         /// <param name="camelCase">是否是camel格式。</param>
         /// <param name="indented">是否美化缩进。</param>
         /// <returns>序列化之后的结果。</returns>
-        T Serialize(object instance, bool camelCase = false, bool indented = false);
+        T Serialize(object instance, bool camelCase = true, bool indented = false);
 
         /// <summary>
         /// 反序列化。
@@ -23,6 +23,6 @@ namespace Surging.Core.CPlatform.Serialization
         /// <param name="content">序列化的内容。</param>
         /// <param name="type">对象类型。</param>
         /// <returns>一个对象实例。</returns>
-        object Deserialize(T content, Type type, bool camelCase = false, bool indented = false);
+        object Deserialize(T content, Type type, bool camelCase = true, bool indented = false);
     }
 }

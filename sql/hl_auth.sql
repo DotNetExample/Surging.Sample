@@ -6,9 +6,6 @@
 CREATE DATABASE hl_auth DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci;
 USE hl_auth;
 
-
-drop table if exists auth_employee;
-
 drop table if exists auth_file;
 
 drop table if exists auth_function;
@@ -31,9 +28,9 @@ drop table if exists auth_role;
 
 drop table if exists auth_role_permission;
 
-drop table if exists auth_user;
+drop table if exists auth_userinfo;
 
-drop table if exists auth_user_group;
+drop table if exists auth_usergroup;
 
 drop table if exists auth_user_role;
 
@@ -41,13 +38,15 @@ drop table if exists auth_user_usergroup;
 
 drop table if exists auth_usergroup_role;
 
+
 /*==============================================================*/
-/* Table: auth_employee                                         */
+/* Table: auth_userinfo                                         */
 /*==============================================================*/
-create table auth_employee
+create table auth_userinfo
 (
    Id                   bigint not null auto_increment comment '主键',
    UserName             varchar(50) not null comment '用户名',
+   Password             varchar(100) not null comment '密码',
    ChineseName          varchar(50) not null comment '中文名',
    Email                varchar(50) not null comment '电子邮件',
    Phone                varchar(22) not null comment '联系电话',
@@ -62,7 +61,9 @@ create table auth_employee
    Major                varchar(50) comment '专业',
    Resume               varchar(500) comment '简历',
    Memo                 varchar(500) comment '备注',
-   Status               int comment '状态',
+   LastLoginTime        datetime comment '最后登录时间',
+   LoginFailedCount     int not null comment '登录失败次数',
+   Status               int not null comment '状态',
    CreateBy             bigint comment '创建人',
    CreateTime           datetime comment '创建日期',
    UpdateBy             bigint comment '修改人',
@@ -73,10 +74,9 @@ create table auth_employee
    primary key (Id)
 );
 
-alter table auth_employee comment '职员表';
+alter table auth_userinfo comment '用户表';
 
-INSERT INTO `hl_auth`.`auth_employee`(`Id`, `UserName`, `ChineseName`, `Email`, `Phone`, `Gender`, `Birth`, `NativePlace`, `Address`, `Folk`, `PoliticalStatus`, `GraduateInstitutions`, `Education`, `Major`, `Resume`, `Memo`, `Status`, `CreateBy`, `CreateTime`, `UpdateBy`, `UpdateTime`, `IsDeleted`, `DeleteBy`, `DeleteTime`) VALUES (1, 'liuhll', 'LiuHongliang', '1029765111@qq.com', '13128729111', 0, '1989-01-15', '云南保山', '广东深圳', '汉族', 0, '云南师大', '本科', '计算机科学与技术', '', '', 1, NULL, '2019-05-14 15:36:34', NULL, NULL, 0, NULL, NULL);
-
+INSERT INTO `hl_auth`.`auth_userinfo`(`Id`, `UserName`, `Password`, `ChineseName`, `Email`, `Phone`, `Gender`, `Birth`, `NativePlace`, `Address`, `Folk`, `PoliticalStatus`, `GraduateInstitutions`, `Education`, `Major`, `Resume`, `Memo`, `LastLoginTime`, `LoginFailedCount`, `Status`, `CreateBy`, `CreateTime`, `UpdateBy`, `UpdateTime`, `IsDeleted`, `DeleteBy`, `DeleteTime`) VALUES (1, 'liuhll', '909e74b36a584cb99e9a83636933a39b', 'liuhongliang', '1029765111@qq.com', '13122222222', 0, '1989-01-01', '云南保山', '广东深圳', '汉族', 0, '云南师大', '本科', '计算机科学与技术', '', '', NULL, 0, 1, NULL, '2019-05-16 22:20:01', NULL, NULL, 0, NULL, NULL);
 
 /*==============================================================*/
 /* Table: auth_file                                             */
@@ -304,39 +304,13 @@ create table auth_role_permission
 alter table auth_role_permission comment '角色权限表';
 
 /*==============================================================*/
-/* Table: auth_user                                             */
+/* Table: auth_usergroup                                       */
 /*==============================================================*/
-create table auth_user
+create table auth_usergroup
 (
    Id                   bigint not null auto_increment comment '主键',
-   EmployeeId           bigint not null comment '员工Id',
-   Email                varchar(50) not null comment '电子邮件',
-   Phone                varchar(22) not null comment '联系电话',
-   UserName             varchar(50) not null comment '用户名',
-   Password             varchar(100) not null comment '密码',
-   LoginFailCount       int not null comment '登录失败次数',
-   Locked               int not null comment '是否被锁定：0.未锁定；1.锁定',
-   Status               int comment '状态',
-   CreateBy             bigint comment '创建人',
-   CreateTime           datetime comment '创建日期',
-   UpdateBy             bigint comment '修改人',
-   UpdateTime           datetime comment '修改日期',
-   IsDeleted            int comment '软删除标识',
-   DeleteBy             bigint comment '删除用户',
-   DeleteTime           datetime comment '删除时间',
-   primary key (Id)
-);
-
-alter table auth_user comment '用户表';
-
-
-/*==============================================================*/
-/* Table: auth_user_group                                       */
-/*==============================================================*/
-create table auth_user_group
-(
-   Id                   bigint not null auto_increment comment '主键',
-   ParentId             varchar(22) not null comment '父用户组Id',
+   ParentId             bigint not null comment '父用户组Id',
+   GroupCode            varchar(50),
    GroupName            varchar(50) not null comment '用户组名称',
    Status               int not null comment '状态',
    CreateBy             bigint comment '创建人',
@@ -349,8 +323,7 @@ create table auth_user_group
    primary key (Id)
 );
 
-alter table auth_user_group comment '用户组表';
-INSERT INTO `hl_auth`.`auth_user`(`Id`, `EmployeeId`, `Email`, `Phone`, `UserName`, `Password`, `LoginFailCount`, `Locked`, `Status`, `CreateBy`, `CreateTime`, `UpdateBy`, `UpdateTime`, `IsDeleted`, `DeleteBy`, `DeleteTime`) VALUES (1, 1, '1029765111@qq.com', '13123456789', 'liuhll', '909e74b36a584cb99e9a83636933a39b', 0, 0, 1, NULL, '2019-05-14 15:36:37', NULL, NULL, 0, NULL, NULL);
+alter table auth_usergroup comment '用户组表';
 
 /*==============================================================*/
 /* Table: auth_user_role                                        */

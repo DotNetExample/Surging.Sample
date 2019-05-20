@@ -6,7 +6,7 @@ namespace Hl.Identity.Domain.Authorization.Users.ClassMappers
     {
         public UserInfoMapper()
         {
-            Table("auth_user");
+            Table("auth_userinfo");
             AutoMap();
         }
     }

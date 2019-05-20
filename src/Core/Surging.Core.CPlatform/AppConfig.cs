@@ -1,4 +1,5 @@
 ﻿using Microsoft.Extensions.Configuration;
+using Surging.Core.CPlatform.Cache;
 using Surging.Core.CPlatform.Configurations;
 using Surging.Core.CPlatform.Runtime.Client.Address.Resolvers.Implementation.Selectors.Implementation;
 using System;
@@ -51,5 +52,7 @@ namespace Surging.Core.CPlatform
                 _serverOptions = value;
             }
         }
+
+        public static CacheSectionOptions CacheSectionOptions { get; internal set; }
     }
 }

@@ -1,5 +1,6 @@
 ﻿using Hl.Core.Enums;
 using Surging.Core.Domain.Entities.Auditing;
+using System;
 
 namespace Hl.Identity.Domain.Authorization.Users
 {
@@ -10,28 +11,44 @@ namespace Hl.Identity.Domain.Authorization.Users
             //Roles = new List<UserRole>();
 
             Status = Status.Valid;
-            Locked = false;
-            LoginFailCount = 0;
+            LoginFailedCount = 0;
         }
 
-        public long EmployeeId { get; set; }
+        public string UserName { get; set; }
+        public string Password { get; set; }
+
+        public string ChineseName { get; set; }
 
         public string Email { get; set; }
 
         public string Phone { get; set; }
 
-        public string UserName { get; set; }
+        public Gender Gender { get; set; }
 
-        public string Password { get; set; }
+        public DateTime Birth { get; set; }
 
-        public int LoginFailCount { get; set; }
+        public string NativePlace { get; set; }
 
-        public bool Locked { get; set; }
+        public string Address { get; set; }
+
+        public string Folk { get; set; }
+
+        public PoliticalStatus PoliticalStatus { get; set; }
+
+        public string GraduateInstitutions { get; set; }
+
+        public string Education { get; set; }
+
+        public string Major { get; set; }
+
+        public string Resume { get; set; }
+
+        public string Memo { get; set; }
 
         public Status Status { get; set; }
 
-        //public EmployeeAggregate Employee { get; set; }
+        public int LoginFailedCount { get; set; }
 
-        //public virtual ICollection<UserRole> Roles { get; set; }
+        public DateTime? LastLoginTime { get; set; }
     }
 }

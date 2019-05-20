@@ -1,11 +1,13 @@
 ﻿using DapperExtensions.Mapper;
+using Hl.Core.ClassMapper;
+
 namespace Hl.Identity.Domain.Authorization.UserGroups.ClassMappers
 {
-    public class UserGroupMapper : ClassMapper<UserGroup>
+    public class UserGroupMapper : HlClassMapper<UserGroup>
     {
         public UserGroupMapper()
         {
-            Table("auth_user_group");
+            Table("auth_usergroup");
             AutoMap();
         }
     }

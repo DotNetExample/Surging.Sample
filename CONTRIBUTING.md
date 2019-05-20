@@ -1,7 +1,7 @@
 # 开发指南
 
 ## Surging架构
-- [Surgingk开源地址](https://github.com/dotnetcore/surging)
+- [Surging开源地址](https://github.com/dotnetcore/surging)
 - [surging作者博客](https://www.cnblogs.com/fanliang11/tag/surging/)
 - [微服务框架surging使用教程](https://liuhll.github.io/hexo-blog-deploy/tags/Surging/)
 

@@ -281,3 +281,4 @@ cacheSettings.json
 **/mysql/
 **/.mysql/
 **/logs
+**/annotationxmldir

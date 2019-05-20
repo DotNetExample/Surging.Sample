@@ -1,6 +1,7 @@
 ﻿using Dapper;
 using DapperExtensions;
 using Microsoft.Extensions.Logging;
+using Surging.Core.Caching;
 using Surging.Core.CPlatform.Exceptions;
 using Surging.Core.CPlatform.Utilities;
 using Surging.Core.Dapper.Expressions;
@@ -13,6 +14,7 @@ using System.Data.Common;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Threading.Tasks;
+using CPlatformAppConfig = Surging.Core.CPlatform.AppConfig;
 
 namespace Surging.Core.Dapper.Repositories
 {
@@ -23,6 +25,9 @@ namespace Surging.Core.Dapper.Repositories
         private readonly IAuditActionFilter<TEntity, TPrimaryKey> _modificationActionFilter;
         private readonly IAuditActionFilter<TEntity, TPrimaryKey> _deletionAuditDapperActionFilter;
         private readonly ILogger<DapperRepository<TEntity, TPrimaryKey>> _logger;
+        private string listCacheKey = typeof(TEntity).FullName.Replace(".","_");
+        private string getCacheKey = typeof(TEntity).FullName.Replace(".", "_") + "_{0}";
+
         public DapperRepository(ISoftDeleteQueryFilter softDeleteQueryFilter,
             ILogger<DapperRepository<TEntity, TPrimaryKey>> logger)
         {
@@ -33,16 +38,19 @@ namespace Surging.Core.Dapper.Repositories
             _deletionAuditDapperActionFilter = ServiceLocator.GetService<IAuditActionFilter<TEntity, TPrimaryKey>>(typeof(DeletionAuditDapperActionFilter<TEntity, TPrimaryKey>).Name);
         }
 
-        public Task InsertAsync(TEntity entity)
+        public async Task InsertAsync(TEntity entity)
         {
             try
             {
                 using (var conn = GetDbConnection())
                 {
                     _creationActionFilter.ExecuteFilter(entity);
-
                     conn.Insert<TEntity>(entity);
-                    return Task.CompletedTask;
+                    if (CPlatformAppConfig.CacheSectionOptions.IsEnableRepositoryCache)
+                    {
+                        CacheFactory.CreateCacheProvider().RemoveAsync(listCacheKey);
+                    }
+                    
                 }
             }
             catch (Exception ex)
@@ -53,12 +61,11 @@ namespace Surging.Core.Dapper.Repositories
                 }
 
                 throw new DataAccessException(ex.Message, ex);
-            }
+            };
         }
 
 
-
-        public Task<TPrimaryKey> InsertAndGetIdAsync(TEntity entity)
+        public async Task<TPrimaryKey> InsertAndGetIdAsync(TEntity entity)
         {
             try
             {
@@ -67,7 +74,12 @@ namespace Surging.Core.Dapper.Repositories
 
                     _creationActionFilter.ExecuteFilter(entity);
                     conn.Insert(entity);
-                    return Task.FromResult(entity.Id);
+                    if (CPlatformAppConfig.CacheSectionOptions.IsEnableRepositoryCache)
+                    {
+                        CacheFactory.CreateCacheProvider().RemoveAsync(listCacheKey);
+                    }
+                    return entity.Id;
+                    
                 }
             }
             catch (Exception ex)
@@ -76,7 +88,6 @@ namespace Surging.Core.Dapper.Repositories
                 {
                     _logger.LogError(ex.Message, ex);
                 }
-
                 throw new DataAccessException(ex.Message, ex);
             }
         }
@@ -89,6 +100,10 @@ namespace Surging.Core.Dapper.Repositories
                 {
                     _creationActionFilter.ExecuteFilter(entity);
                     await InsertAsync(entity);
+                    if (CPlatformAppConfig.CacheSectionOptions.IsEnableRepositoryCache)
+                    {
+                        CacheFactory.CreateCacheProvider().RemoveAsync(listCacheKey);
+                    }
                 }
                 else
                 {
@@ -97,11 +112,20 @@ namespace Surging.Core.Dapper.Repositories
                     {
                         _creationActionFilter.ExecuteFilter(entity);
                         await InsertAsync(entity);
+                        if (CPlatformAppConfig.CacheSectionOptions.IsEnableRepositoryCache)
+                        {
+                            CacheFactory.CreateCacheProvider().RemoveAsync(listCacheKey);
+                        }
                     }
                     else
                     {
                         _modificationActionFilter.ExecuteFilter(entity);
                         await UpdateAsync(entity);
+                        if (CPlatformAppConfig.CacheSectionOptions.IsEnableRepositoryCache)
+                        {
+                            CacheFactory.CreateCacheProvider().Remove(listCacheKey, string.Format(getCacheKey, entity.Id));
+                        }
+                        
                     }
                 }
             }
@@ -153,7 +177,7 @@ namespace Surging.Core.Dapper.Repositories
             }
         }
 
-        public Task DeleteAsync(TEntity entity)
+        public async Task DeleteAsync(TEntity entity)
         {
             try
             {
@@ -162,14 +186,16 @@ namespace Surging.Core.Dapper.Repositories
                     if (entity is ISoftDelete)
                     {
                         _deletionAuditDapperActionFilter.ExecuteFilter(entity);
-                        UpdateAsync(entity);
+                        await UpdateAsync(entity);
                     }
                     else
                     {
                         conn.Delete(entity);
-
+                        if (CPlatformAppConfig.CacheSectionOptions.IsEnableRepositoryCache)
+                        {
+                            CacheFactory.CreateCacheProvider().Remove(listCacheKey, string.Format(getCacheKey, entity.Id));
+                        }
                     }
-                    return Task.CompletedTask;
                 }
             }
             catch (Exception ex)
@@ -194,7 +220,7 @@ namespace Surging.Core.Dapper.Repositories
 
         }
 
-        public Task UpdateAsync(TEntity entity)
+        public async Task UpdateAsync(TEntity entity)
         {
             try
             {
@@ -202,7 +228,10 @@ namespace Surging.Core.Dapper.Repositories
                 {
                     _modificationActionFilter.ExecuteFilter(entity);
                     conn.Update(entity);
-                    return Task.CompletedTask;
+                    if (CPlatformAppConfig.CacheSectionOptions.IsEnableRepositoryCache)
+                    {
+                        CacheFactory.CreateCacheProvider().Remove(listCacheKey, string.Format(getCacheKey, entity.Id));
+                    }                   
                 }
             }
             catch (Exception ex)
@@ -216,15 +245,24 @@ namespace Surging.Core.Dapper.Repositories
             }
         }
 
-        public Task<TEntity> FirstOrDefaultAsync(Expression<Func<TEntity, bool>> predicate)
+        public async Task<TEntity> FirstOrDefaultAsync(Expression<Func<TEntity, bool>> predicate)
         {
             try
             {
-                using (var conn = GetDbConnection())
+                if (CPlatformAppConfig.CacheSectionOptions.IsEnableRepositoryCache)
                 {
-                    predicate = _softDeleteQueryFilter.ExecuteFilter<TEntity, TPrimaryKey>(predicate);
-                    var pg = predicate.ToPredicateGroup<TEntity, TPrimaryKey>();
-                    return Task.FromResult(conn.GetList<TEntity>(pg).FirstOrDefault());
+                    var list = await GetAllAsync();
+                    return list.AsQueryable().FirstOrDefault(predicate);
+                }
+                else
+                {
+                    using (var conn = GetDbConnection())
+                    {
+                        predicate = _softDeleteQueryFilter.ExecuteFilter<TEntity, TPrimaryKey>(predicate);
+                        var pg = predicate.ToPredicateGroup<TEntity, TPrimaryKey>();
+                        return conn.GetList<TEntity>(pg).FirstOrDefault();
+                    }
+                    
                 }
             }
             catch (Exception ex)
@@ -238,16 +276,25 @@ namespace Surging.Core.Dapper.Repositories
             }
         }
 
-        public Task<TEntity> FirstAsync(Expression<Func<TEntity, bool>> predicate)
+        public async Task<TEntity> FirstAsync(Expression<Func<TEntity, bool>> predicate)
         {
             try
             {
-                using (var conn = GetDbConnection())
+                if (CPlatformAppConfig.CacheSectionOptions.IsEnableRepositoryCache)
                 {
-                    predicate = _softDeleteQueryFilter.ExecuteFilter<TEntity, TPrimaryKey>(predicate);
-                    var pg = predicate.ToPredicateGroup<TEntity, TPrimaryKey>();
-                    return Task.FromResult(conn.GetList<TEntity>(pg).First());
+                    var list = await GetAllAsync();
+                    return list.AsQueryable().First(predicate);
                 }
+                else
+                {
+                    using (var conn = GetDbConnection())
+                    {
+                        predicate = _softDeleteQueryFilter.ExecuteFilter<TEntity, TPrimaryKey>(predicate);
+                        var pg = predicate.ToPredicateGroup<TEntity, TPrimaryKey>();
+                        return conn.GetList<TEntity>(pg).First();
+                    }
+                }
+              
             }
             catch (Exception ex)
             {
@@ -261,16 +308,24 @@ namespace Surging.Core.Dapper.Repositories
         }
 
 
-        public Task<TEntity> SingleAsync(Expression<Func<TEntity, bool>> predicate)
+        public async Task<TEntity> SingleAsync(Expression<Func<TEntity, bool>> predicate)
         {
             try
             {
-                using (var conn = GetDbConnection())
+                if (CPlatformAppConfig.CacheSectionOptions.IsEnableRepositoryCache)
                 {
-                    predicate = _softDeleteQueryFilter.ExecuteFilter<TEntity, TPrimaryKey>(predicate);
-                    var pg = predicate.ToPredicateGroup<TEntity, TPrimaryKey>();
-                    return Task.FromResult(conn.GetList<TEntity>(pg).Single());
+                    var list = await GetAllAsync();
+                    return list.AsQueryable().Single(predicate);
                 }
+                else
+                {
+                    using (var conn = GetDbConnection())
+                    {
+                        predicate = _softDeleteQueryFilter.ExecuteFilter<TEntity, TPrimaryKey>(predicate);
+                        var pg = predicate.ToPredicateGroup<TEntity, TPrimaryKey>();
+                        return conn.GetList<TEntity>(pg).Single();
+                    }
+                }              
             }
             catch (Exception ex)
             {
@@ -284,16 +339,25 @@ namespace Surging.Core.Dapper.Repositories
         }
 
 
-        public Task<TEntity> SingleOrDefaultAsync(Expression<Func<TEntity, bool>> predicate)
+        public async Task<TEntity> SingleOrDefaultAsync(Expression<Func<TEntity, bool>> predicate)
         {
             try
             {
-                using (var conn = GetDbConnection())
+                if (CPlatformAppConfig.CacheSectionOptions.IsEnableRepositoryCache)
                 {
-                    predicate = _softDeleteQueryFilter.ExecuteFilter<TEntity, TPrimaryKey>(predicate);
-                    var pg = predicate.ToPredicateGroup<TEntity, TPrimaryKey>();
-                    return Task.FromResult(conn.GetList<TEntity>(pg).SingleOrDefault());
+                    var list = await GetAllAsync();
+                    return list.AsQueryable().SingleOrDefault(predicate);
                 }
+                else
+                {
+                    using (var conn = GetDbConnection())
+                    {
+                        predicate = _softDeleteQueryFilter.ExecuteFilter<TEntity, TPrimaryKey>(predicate);
+                        var pg = predicate.ToPredicateGroup<TEntity, TPrimaryKey>();
+                        return conn.GetList<TEntity>(pg).SingleOrDefault();
+                    }
+                }
+                
             }
             catch (Exception ex)
             {
@@ -306,23 +370,42 @@ namespace Surging.Core.Dapper.Repositories
             }
         }
 
-        public Task<TEntity> GetAsync(TPrimaryKey id)
+        public async Task<TEntity> GetAsync(TPrimaryKey id)
         {
-            return SingleAsync(CreateEqualityExpressionForId(id));
+            return await CacheFactory.CreateCacheProvider().GetAsyn(string.Format(getCacheKey, id), async () => {
+                return await SingleAsync(CreateEqualityExpressionForId(id));
+            });
+           
         }
 
 
-        public Task<IEnumerable<TEntity>> GetAllAsync()
+        public async Task<IEnumerable<TEntity>> GetAllAsync()
         {
             try
             {
-                using (var conn = GetDbConnection())
+                if (CPlatformAppConfig.CacheSectionOptions.IsEnableRepositoryCache)
                 {
-                    var predicate = _softDeleteQueryFilter.ExecuteFilter<TEntity, TPrimaryKey>();
-                    var pg = predicate.ToPredicateGroup<TEntity, TPrimaryKey>();
-                    var list = conn.GetList<TEntity>(pg);
-                    return Task.FromResult(list);
+                    return await CacheFactory.CreateCacheProvider().GetAsyn(listCacheKey, async () =>
+                    {
+                        using (var conn = GetDbConnection())
+                        {
+                            var predicate = _softDeleteQueryFilter.ExecuteFilter<TEntity, TPrimaryKey>();
+                            var pg = predicate.ToPredicateGroup<TEntity, TPrimaryKey>();
+                            var list = conn.GetList<TEntity>(pg);
+                            return list;
+                        }
+                    });
                 }
+                else {
+                    using (var conn = GetDbConnection())
+                    {
+                        var predicate = _softDeleteQueryFilter.ExecuteFilter<TEntity, TPrimaryKey>();
+                        var pg = predicate.ToPredicateGroup<TEntity, TPrimaryKey>();
+                        var list = conn.GetList<TEntity>(pg);
+                        return list;
+                    }
+                }
+               
             }
             catch (Exception ex)
             {
@@ -333,19 +416,33 @@ namespace Surging.Core.Dapper.Repositories
 
                 throw new DataAccessException(ex.Message, ex);
             }
+
         }
 
-        public Task<IEnumerable<TEntity>> GetAllAsync(Expression<Func<TEntity, bool>> predicate)
+        public async Task<IEnumerable<TEntity>> GetAllAsync(Expression<Func<TEntity, bool>> predicate)
         {
             try
             {
-                using (var conn = GetDbConnection())
+                if (CPlatformAppConfig.CacheSectionOptions.IsEnableRepositoryCache)
                 {
-                    predicate = _softDeleteQueryFilter.ExecuteFilter<TEntity, TPrimaryKey>(predicate);
-                    var pg = predicate.ToPredicateGroup<TEntity, TPrimaryKey>();
-                    var list = conn.GetList<TEntity>(pg);
-                    return Task.FromResult(list);
+                    return (await GetAllAsync()).AsQueryable().Where(predicate);
                 }
+                else
+                {
+                    using (var conn = GetDbConnection())
+                    {
+                        predicate = _softDeleteQueryFilter.ExecuteFilter<TEntity, TPrimaryKey>(predicate);
+                        var pg = predicate.ToPredicateGroup<TEntity, TPrimaryKey>();
+                        var list = conn.GetList<TEntity>(pg);
+                        if (CPlatformAppConfig.CacheSectionOptions.IsEnableRepositoryCache)
+                        {
+                            CacheFactory.CreateCacheProvider().Update(listCacheKey, list);
+                        }
+                        return list;
+                    }
+                }
+                
+
             }
             catch (Exception ex)
             {
@@ -411,13 +508,17 @@ namespace Surging.Core.Dapper.Repositories
         }
 
 
-        public Task InsertAsync(TEntity entity, DbConnection conn, DbTransaction trans)
+        public async Task InsertAsync(TEntity entity, DbConnection conn, DbTransaction trans)
         {
             try
             {
                 _creationActionFilter.ExecuteFilter(entity);
                 conn.Insert<TEntity>(entity, trans);
-                return Task.CompletedTask;
+                if (CPlatformAppConfig.CacheSectionOptions.IsEnableRepositoryCache)
+                {
+                    CacheFactory.CreateCacheProvider().RemoveAsync(listCacheKey);
+                }
+
             }
             catch (Exception ex)
             {
@@ -431,13 +532,17 @@ namespace Surging.Core.Dapper.Repositories
 
         }
 
-        public Task<TPrimaryKey> InsertAndGetIdAsync(TEntity entity, DbConnection conn, DbTransaction trans)
+        public async Task<TPrimaryKey> InsertAndGetIdAsync(TEntity entity, DbConnection conn, DbTransaction trans)
         {
             try
             {
                 _creationActionFilter.ExecuteFilter(entity);
                 conn.Insert<TEntity>(entity, trans);
-                return Task.FromResult(entity.Id);
+                if (CPlatformAppConfig.CacheSectionOptions.IsEnableRepositoryCache)
+                {
+                    CacheFactory.CreateCacheProvider().RemoveAsync(listCacheKey);
+                }
+                return entity.Id;
             }
             catch (Exception ex)
             {
@@ -526,13 +631,16 @@ namespace Surging.Core.Dapper.Repositories
             }
         }
 
-        public Task UpdateAsync(TEntity entity, DbConnection conn, DbTransaction trans)
+        public async Task UpdateAsync(TEntity entity, DbConnection conn, DbTransaction trans)
         {
             try
             {
                 _modificationActionFilter.ExecuteFilter(entity);
                 conn.Update(entity, trans);
-                return Task.CompletedTask;
+                if (CPlatformAppConfig.CacheSectionOptions.IsEnableRepositoryCache)
+                {
+                    CacheFactory.CreateCacheProvider().Remove(listCacheKey, string.Format(getCacheKey, entity.Id));
+                }
 
             }
             catch (Exception ex)
@@ -548,7 +656,7 @@ namespace Surging.Core.Dapper.Repositories
 
         }
 
-        public Task DeleteAsync(TEntity entity, DbConnection conn, DbTransaction trans)
+        public async Task DeleteAsync(TEntity entity, DbConnection conn, DbTransaction trans)
         {
             try
             {
@@ -556,14 +664,16 @@ namespace Surging.Core.Dapper.Repositories
                 if (entity is ISoftDelete)
                 {
                     _deletionAuditDapperActionFilter.ExecuteFilter(entity);
-                    UpdateAsync(entity, conn, trans);
+                    await UpdateAsync(entity, conn, trans);
                 }
                 else
                 {
                     conn.Delete(entity, trans);
-
+                    if (CPlatformAppConfig.CacheSectionOptions.IsEnableRepositoryCache)
+                    {
+                        CacheFactory.CreateCacheProvider().Remove(listCacheKey,string.Format(getCacheKey,entity.Id));
+                    }
                 }
-                return Task.CompletedTask;
 
             }
             catch (Exception ex)
@@ -599,5 +709,138 @@ namespace Surging.Core.Dapper.Repositories
 
             return Expression.Lambda<Func<TEntity, bool>>(lambdaBody, lambdaParam);
         }
+
+        public async Task<int> GetCountAsync()
+        {
+            try
+            {
+                using (var conn = GetDbConnection())
+                {
+                    var predicate = _softDeleteQueryFilter.ExecuteFilter<TEntity, TPrimaryKey>();
+                    var pg = predicate.ToPredicateGroup<TEntity, TPrimaryKey>();
+                    var count = conn.Count<TEntity>(pg);
+                    return count;
+                }
+            }
+            catch (Exception ex)
+            {
+                if (_logger.IsEnabled(LogLevel.Error))
+                {
+                    _logger.LogError(ex.Message, ex);
+                }
+
+                throw new DataAccessException(ex.Message, ex);
+            }
+        }
+
+        public async Task<int> GetCountAsync(Expression<Func<TEntity, bool>> predicate)
+        {
+            try
+            {
+                using (var conn = GetDbConnection())
+                {
+                    predicate = _softDeleteQueryFilter.ExecuteFilter<TEntity, TPrimaryKey>(predicate);
+                    var pg = predicate.ToPredicateGroup<TEntity, TPrimaryKey>();
+                    var count = conn.Count<TEntity>(pg);
+                    return count;
+                }
+            }
+            catch (Exception ex)
+            {
+                if (_logger.IsEnabled(LogLevel.Error))
+                {
+                    _logger.LogError(ex.Message, ex);
+                }
+
+                throw new DataAccessException(ex.Message, ex);
+            }
+        }
+
+        public Task<IEnumerable<TEntity>> GetPageAsync(Expression<Func<TEntity, bool>> predicate, int index, int count, IDictionary<string, SortType> sortProps)
+        {
+            try
+            {
+                using (var conn = GetDbConnection())
+                {
+                    IList<ISort> sorts = new List<ISort>();
+
+                    if (sortProps != null && sortProps.Any())
+                    {
+                        foreach (var sortProp in sortProps)
+                        {
+                            var sort = new Sort()
+                            {
+                                PropertyName = sortProp.Key,
+                                Ascending = sortProp.Value == SortType.Asc ? true : false
+                            };
+                            sorts.Add(sort);
+                        };
+                    }
+                    predicate = _softDeleteQueryFilter.ExecuteFilter<TEntity, TPrimaryKey>(predicate);
+                    var pg = predicate.ToPredicateGroup<TEntity, TPrimaryKey>();
+                    var list = conn.GetPage<TEntity>(predicate, sorts, index, count);
+                    return Task.FromResult(list);
+                }
+            }
+            catch (Exception ex)
+            {
+                if (_logger.IsEnabled(LogLevel.Error))
+                {
+                    _logger.LogError(ex.Message, ex);
+                }
+
+                throw new DataAccessException(ex.Message, ex);
+            }
+
+        }
+
+        public Task<IEnumerable<TEntity>> GetPageAsync(Expression<Func<TEntity, bool>> predicate, int index, int count)
+        {
+            return GetPageAsync(predicate, index, count, null);
+        }
+
+        public Task<IEnumerable<TEntity>> GetPageAsync(int index, int count, IDictionary<string, SortType> sortProps)
+        {
+            try
+            {
+                using (var conn = GetDbConnection())
+                {
+                    IList<ISort> sorts = new List<ISort>();
+
+                    if (sortProps != null && sortProps.Any())
+                    {
+                        foreach (var sortProp in sortProps)
+                        {
+                            var sort = new Sort()
+                            {
+                                PropertyName = sortProp.Key,
+                                Ascending = sortProp.Value == SortType.Asc ? true : false
+                            };
+                            sorts.Add(sort);
+                        };
+                    }
+                    var predicate = _softDeleteQueryFilter.ExecuteFilter<TEntity, TPrimaryKey>();
+                    var pg = predicate.ToPredicateGroup<TEntity, TPrimaryKey>();
+                    var list = conn.GetPage<TEntity>(predicate, sorts, index, count);
+                    return Task.FromResult(list);
+                }
+            }
+            catch (Exception ex)
+            {
+                if (_logger.IsEnabled(LogLevel.Error))
+                {
+                    _logger.LogError(ex.Message, ex);
+                }
+
+                throw new DataAccessException(ex.Message, ex);
+            }
+
+        }
+
+        public Task<IEnumerable<TEntity>> GetPageAsync(int index, int count)
+        {
+            return GetPageAsync(index, count, null);
+        }
+
     }
 }

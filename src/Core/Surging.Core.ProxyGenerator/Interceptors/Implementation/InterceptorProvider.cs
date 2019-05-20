@@ -39,8 +39,10 @@ namespace Surging.Core.ProxyGenerator.Interceptors.Implementation
                          let k = q.Attributes
                          where q.Descriptor.Id == serviceId
                          select q).FirstOrDefault();
-            var constructor = InvocationMethods.CompositionInvocationConstructor;
-            return constructor.Invoke(new object[]{
+            if (entry != null)
+            {
+                var constructor = InvocationMethods.CompositionInvocationConstructor;
+                return constructor.Invoke(new object[]{
                     parameters,
                     serviceId,
                     GetKey(parameters),
@@ -48,6 +50,9 @@ namespace Surging.Core.ProxyGenerator.Interceptors.Implementation
                     returnType,
                     proxy
                 }) as IInvocation;
+            }
+            return null;
+
         }
 
         private string[] GetKey(IDictionary<string, object> parameterValue)

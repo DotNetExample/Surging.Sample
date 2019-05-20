@@ -39,6 +39,9 @@ namespace Surging.Core.Dapper.Repositories
 
         Task DeleteAsync(Expression<Func<TEntity, bool>> predicate, DbConnection conn, DbTransaction trans);
 
+        Task<int> GetCountAsync(Expression<Func<TEntity, bool>> predicate);
+
+        Task<int> GetCountAsync();
 
         Task<TEntity> SingleAsync(Expression<Func<TEntity, bool>> predicate);
 
@@ -57,5 +60,14 @@ namespace Surging.Core.Dapper.Repositories
         Task<IEnumerable<TEntity>> QueryAsync(string query, object parameters = null);
 
         Task<IEnumerable<TAny>> Query<TAny>(string query, object parameters = null) where TAny : class;
+
+
+        Task<IEnumerable<TEntity>> GetPageAsync(Expression<Func<TEntity, bool>> predicate, int index, int count, IDictionary<string, SortType> sortProps);
+
+        Task<IEnumerable<TEntity>> GetPageAsync(Expression<Func<TEntity, bool>> predicate, int index, int count);
+
+        Task<IEnumerable<TEntity>> GetPageAsync(int index, int count, IDictionary<string, SortType> sortProps);
+
+        Task<IEnumerable<TEntity>> GetPageAsync(int index, int count);
     }
 }

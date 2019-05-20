@@ -8,7 +8,6 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Surging.Core.ApiGateWay;
 using Surging.Core.ApiGateWay.OAuth;
-using Surging.Core.ApiGateWay.OAuth.Models;
 using Surging.Core.CPlatform;
 using Surging.Core.CPlatform.Exceptions;
 using Surging.Core.CPlatform.Filters.Implementation;
@@ -17,7 +16,6 @@ using Surging.Core.CPlatform.Serialization;
 using Surging.Core.CPlatform.Transport.Implementation;
 using Surging.Core.CPlatform.Utilities;
 using Surging.Core.ProxyGenerator;
-using Surging.Core.System.SystemType;
 using GateWayAppConfig = Surging.Core.ApiGateWay.AppConfig;
 using MessageStatusCode = Surging.Core.CPlatform.Messages.StatusCode;
 
@@ -47,14 +45,29 @@ namespace Hl.Gateway.WebApi.Controllers
         public async Task<ServiceResult<object>> Path([FromServices]IServicePartProvider servicePartProvider, string path, [FromBody]Dictionary<string, object> model)
         {
             var serviceKey = this.Request.Query["servicekey"];
-            if (model == null)
+            var rpcParams = new Dictionary<string, object>();
+            switch (Request.Method)
             {
-                model = new Dictionary<string, object>();
+                case "GET":
+                    
+                    foreach (string n in this.Request.Query.Keys)
+                    {
+                        rpcParams[n] = this.Request.Query[n].ToString();
+                    }
+                    break;
+                case "POST":
+                    if (model == null || !model.Any())
+                    {
+                        return new ServiceResult<object> { IsSucceed = false, StatusCode = (int)MessageStatusCode.RequestError, Message = $"请使用GET方法重试" };
+                    }
+                    rpcParams = model;
+                    break;
+                default:
+                    return new ServiceResult<object> { IsSucceed = false, StatusCode = (int)MessageStatusCode.RequestError, Message = $"暂不支持{Request.Method}请求方法" };
+
             }
-            foreach (string n in this.Request.Query.Keys)
-            {
-                model[n] = this.Request.Query[n].ToString();
-            }
+          
+           
             var result = ServiceResult<object>.Create(false, null);
             path = path.ToLower();
             if (await GetAllowRequest(path) == false)
@@ -65,7 +78,7 @@ namespace Hl.Gateway.WebApi.Controllers
 
             if (servicePartProvider.IsPart(path))
             {
-                var data = (string)await servicePartProvider.Merge(path, model);
+                var data = (string)await servicePartProvider.Merge(path, rpcParams);
                 return CreateServiceResult(data);
             }
             else
@@ -74,7 +87,7 @@ namespace Hl.Gateway.WebApi.Controllers
                 {
                     try
                     {
-                        var token = await _authorizationServerProvider.GenerateTokenCredential(model);
+                        var token = await _authorizationServerProvider.GenerateTokenCredential(rpcParams);
                         if (token != null)
                         {
                             result = ServiceResult<object>.Create(true, token);
@@ -96,18 +109,18 @@ namespace Hl.Gateway.WebApi.Controllers
                 }
                 else
                 {
-                    if (OnAuthorization(path, model, ref result))
+                    if (OnAuthorization(path, rpcParams, ref result))
                     {
                         try
                         {
                             if (!string.IsNullOrEmpty(serviceKey))
                             {
-                                var data = await _serviceProxyProvider.Invoke<object>(model, path, serviceKey);
+                                var data = await _serviceProxyProvider.Invoke<object>(rpcParams, path, serviceKey);
                                 return CreateServiceResult(data);
                             }
                             else
                             {
-                                var data = await _serviceProxyProvider.Invoke<object>(model, path);
+                                var data = await _serviceProxyProvider.Invoke<object>(rpcParams, path);
                                 if (data == null)
                                 {
                                     return new ServiceResult<object> { IsSucceed = false, StatusCode = (int)MessageStatusCode.UnKnownError, Message = "服务异常" };

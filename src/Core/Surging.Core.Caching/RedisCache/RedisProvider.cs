@@ -16,7 +16,7 @@ namespace Surging.Core.Caching.RedisCache
 
         private readonly Lazy<RedisContext> _context;
         private Lazy<long> _defaultExpireTime;
-        private const double ExpireTime = 60D;
+      //  private const double ExpireTime = 60D;
         private string _keySuffix;
         private Lazy<int> _connectTimeout;
         private readonly Lazy<ICacheClient<IDatabase>> _cacheClient;
@@ -66,7 +66,7 @@ namespace Surging.Core.Caching.RedisCache
         /// </remarks>
         public void Add(string key, object value)
         {
-            this.Add(key, value, TimeSpan.FromSeconds(ExpireTime));
+            this.Add(key, value, TimeSpan.FromMinutes(ExpireTime));
         }
 
         /// <summary>
@@ -409,6 +409,19 @@ namespace Surging.Core.Caching.RedisCache
             }
         }
 
+        public long ExpireTime
+        {
+            get
+            {
+                return _defaultExpireTime.Value;
+            }
+            set
+            {
+                _defaultExpireTime = new Lazy<long>(() => value);
+            }
+
+        }
+
         #endregion 公共方法
 
         #region 私有方法
@@ -459,6 +472,31 @@ namespace Surging.Core.Caching.RedisCache
             var connection = await _cacheClient
                  .Value.ConnectionAsync(endpoint, ConnectTimeout);
             return connection;
+        }
+
+        public void RemoveWithPrefix(string prefix)
+        {
+            var node = GetRedisNode(prefix);
+            var redis = GetRedisClient(new RedisEndpoint()
+            {
+                DbIndex = int.Parse(node.Db),
+                Host = node.Host,
+                Password = node.Password,
+                Port = int.Parse(node.Port),
+                MinSize = int.Parse(node.MinSize),
+                MaxSize = int.Parse(node.MaxSize),
+            });
+
+            redis.ScriptEvaluate(@"
+                local keys = redis.call('keys', ARGV[1]) 
+                for i=1,#keys,5000 do 
+                redis.call('del', unpack(keys, i, math.min(i+4999, #keys)))
+                end", values: new RedisValue[] { prefix });
+        }
+
+        public void Clear()
+        {
+            this.RemoveWithPrefix("*");
         }
 
         #endregion 私有方法

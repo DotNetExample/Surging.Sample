@@ -1,7 +1,10 @@
 ﻿using Hl.BasicData.Common.SystemConf;
+using Hl.BasicData.Domain;
 using Hl.Core.Maintenance;
+using Surging.Core.Caching;
 using Surging.Core.CPlatform.Ioc;
 using Surging.Core.CPlatform.Runtime.Server.Implementation.ServiceDiscovery.Attributes;
+using Surging.Core.System.Intercept;
 using System.Threading.Tasks;
 
 namespace Hl.BasicData.IApplication
