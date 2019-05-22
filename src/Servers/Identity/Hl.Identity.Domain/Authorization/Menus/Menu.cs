@@ -9,6 +9,8 @@ namespace Hl.Identity.Domain.Authorization.Menus
         {
             Status = Status.Valid;
         }
+
+        public long PermissionId { get; set; }
         public string Code { get; set; }
         public string Name { get; set; }
         public string UrlPath { get; set; }

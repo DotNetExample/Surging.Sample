@@ -1,4 +1,5 @@
-﻿using Hl.Identity.IApplication.Menus.Dtos;
+﻿using Hl.Core.Commons.Dtos;
+using Hl.Identity.IApplication.Menus.Dtos;
 using Surging.Core.CPlatform.Ioc;
 using Surging.Core.CPlatform.Runtime.Server.Implementation.ServiceDiscovery.Attributes;
 using System.Threading.Tasks;
@@ -9,6 +10,9 @@ namespace Hl.Identity.IApplication.Menus
     public interface IMenuApplication : IServiceKey
     {
         Task<string> CreateMenu(CreateMenuInput input);
-      
+
+        Task<string> UpdateMenu(UpdateMenuInput input);
+
+        Task<string> DeleteMenu(DeleteByIdInput input);
     }
 }

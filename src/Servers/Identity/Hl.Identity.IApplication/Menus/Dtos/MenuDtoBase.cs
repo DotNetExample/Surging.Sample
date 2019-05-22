@@ -8,9 +8,8 @@ namespace Hl.Identity.IApplication.Menus.Dtos
         [Required(ErrorMessage = "菜单名称不允许为空")]
         [MaxLength(50, ErrorMessage = "菜单名称长度不允许超过50")]
         public string Name { get; set; }
-        [RegularExpression("/([a-zA-Z_0-9])+(/?)", ErrorMessage = "UrlPath格式不正确")]
+        [RegularExpression("(/\\w+){1,}(/?)", ErrorMessage = "UrlPath格式不正确")]
         public string UrlPath { get; set; }
-        public long ParentId { get; set; }
         public int Level { get; set; }
         public MenuMold Mold { get; set; }
         public string Icon { get; set; }

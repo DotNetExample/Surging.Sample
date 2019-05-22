@@ -22,8 +22,6 @@ drop table if exists auth_permission_file;
 
 drop table if exists auth_permission_function;
 
-drop table if exists auth_permission_menu;
-
 drop table if exists auth_role;
 
 drop table if exists auth_role_permission;
@@ -133,6 +131,7 @@ alter table auth_function comment '功能操作表';
 create table auth_menu
 (
    Id                   bigint not null auto_increment comment '主键',
+   PermissionId         int not null comment 'PermissionId',
    Code                 varchar(50) not null comment '菜单编码',
    Name                 varchar(50) not null comment '菜单名称',
    UrlPath              varchar(50) not null comment '菜单URL',
@@ -248,23 +247,6 @@ create table auth_permission_function
 alter table auth_permission_function comment '权限菜单关系表';
 
 /*==============================================================*/
-/* Table: auth_permission_menu                                  */
-/*==============================================================*/
-create table auth_permission_menu
-(
-   Id                   bigint not null auto_increment comment '主键',
-   PermissionId         bigint not null,
-   MenuId               bigint not null,
-   CreateBy             bigint comment '创建人',
-   CreateTime           datetime comment '创建日期',
-   UpdateBy             bigint comment '修改人',
-   UpdateTime           datetime comment '修改日期',
-   primary key (Id)
-);
-
-alter table auth_permission_menu comment '权限菜单关系表';
-
-/*==============================================================*/
 /* Table: auth_role                                             */
 /*==============================================================*/
 create table auth_role
@@ -293,14 +275,13 @@ create table auth_role_permission
 (
    Id                   bigint not null auto_increment comment '主键',
    RoleId               bigint not null,
-   PerssionId           char(10) not null,
+   PerssionId           bigint not null,
    CreateBy             bigint comment '创建人',
    CreateTime           datetime comment '创建日期',
    UpdateBy             bigint comment '修改人',
    UpdateTime           datetime comment '修改日期',
    primary key (Id)
 );
-
 alter table auth_role_permission comment '角色权限表';
 
 /*==============================================================*/

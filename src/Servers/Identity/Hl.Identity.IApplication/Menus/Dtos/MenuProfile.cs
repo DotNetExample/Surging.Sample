@@ -9,6 +9,7 @@ namespace Hl.Identity.IApplication.Menus.Dtos
         public MenuProfile()
         {
             CreateMap<CreateMenuInput, Menu>().ForMember(p => p.Memo, opt => opt.Ignore());
+            CreateMap<UpdateMenuInput, Menu>().ForMember(p => p.Memo, opt => opt.Ignore());
         }
     }
 }

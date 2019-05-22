@@ -8,5 +8,7 @@ namespace Hl.Identity.Domain.Authorization.Menus
     public interface IMenuManager : ITransientDependency
     {
         Task CreateMenu(Menu menu, Permission permission);
+        Task UpdateMenu(Menu menu, Permission permission);
+        Task DeleteMenu(long id);
     }
 }
