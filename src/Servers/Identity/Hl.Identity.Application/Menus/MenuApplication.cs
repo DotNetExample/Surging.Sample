@@ -65,7 +65,7 @@ namespace Hl.Identity.Application.Menus
                 Mold = PermissionMold.Operate
             };
             await _functionManager.CreateFunction(function, permission, input.MenuId);
-            return "新增功能成功";
+            return "新增功能操作成功";
         }
 
         public async Task<string> CreateMenu(CreateMenuInput input)
@@ -97,6 +97,19 @@ namespace Hl.Identity.Application.Menus
         {
             await _menuManager.DeleteMenu(input.Id);
             return "删除菜单成功";
+        }
+
+        public async Task<string> UpdateFunction(UpdateFunctionInput input)
+        {
+            input.CheckDataAnnotations().CheckValidResult();
+            var function = await _functionRepository.SingleOrDefaultAsync(p => p.Id == input.Id);
+            if (function == null)
+            {
+                throw new BusinessException($"不存在Id为{input.Id}的功能信息");
+            }
+            function = input.MapTo(function);
+            await _functionRepository.UpdateAsync(function);
+            return "更新功能操作成功";
         }
 
         public async Task<string> UpdateMenu(UpdateMenuInput input)

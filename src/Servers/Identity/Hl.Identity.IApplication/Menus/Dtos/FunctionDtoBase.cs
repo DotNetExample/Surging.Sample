@@ -15,7 +15,6 @@ namespace Hl.Identity.IApplication.Menus.Dtos
         public string WebApi { get; set; }
         public Status Status { get; set; }
         public HttpMethod Method { get; set; }
-        public long ParentId { get; set; }
         public string Memo { get; set; }
     }
 }
