@@ -14,5 +14,7 @@ namespace Hl.Identity.IApplication.Menus
         Task<string> UpdateMenu(UpdateMenuInput input);
 
         Task<string> DeleteMenu(DeleteByIdInput input);
+
+        Task<string> CreateFunction(CreateFunctionInput input);
     }
 }

@@ -1,4 +1,5 @@
-﻿using Surging.Core.Domain.Entities.Auditing;
+﻿using Hl.Core.Enums;
+using Surging.Core.Domain.Entities.Auditing;
 
 namespace Hl.Identity.Domain.Authorization.Menus
 {
@@ -7,8 +8,8 @@ namespace Hl.Identity.Domain.Authorization.Menus
         public string Code { get; set; }
         public string Name { get; set; }
         public string WebApi { get; set; }
-        public int Status { get; set; }
-        public int Method { get; set; }
+        public Status Status { get; set; }
+        public HttpMethod Method { get; set; }
         public long ParentId { get; set; }
         public string Memo { get; set; }
 

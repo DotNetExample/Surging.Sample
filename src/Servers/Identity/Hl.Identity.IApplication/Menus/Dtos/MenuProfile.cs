@@ -10,6 +10,7 @@ namespace Hl.Identity.IApplication.Menus.Dtos
         {
             CreateMap<CreateMenuInput, Menu>().ForMember(p => p.Memo, opt => opt.Ignore());
             CreateMap<UpdateMenuInput, Menu>().ForMember(p => p.Memo, opt => opt.Ignore());
+            CreateMap<CreateFunctionInput, Function>();
         }
     }
 }
