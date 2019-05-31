@@ -18,5 +18,9 @@ namespace Hl.Identity.IApplication.Menus
         Task<CreateFunctionOutput> CreateFunction(CreateFunctionInput input);
 
         Task<string> UpdateFunction(UpdateFunctionInput input);
+
+        Task<string> CreateOperation(CreateOperationInput input);
+
+        Task<string> UpdateOperation(UpdateOperationInput input);
     }
 }

@@ -38,7 +38,7 @@ namespace Hl.Identity.Application.Menus
         public async Task<CreateFunctionOutput> CreateFunction(CreateFunctionInput input)
         {
             input.CheckDataAnnotations().CheckValidResult();
-            var funcCode = (input.WebApi.Replace("/", ".") + "." + input.Method).ToLower();
+            var funcCode = input.WebApi.Replace("/", "."); //(input.WebApi.Replace("/", ".") + "." + input.Method).ToLower();
             var existFunc = await _functionRepository.SingleOrDefaultAsync(p => p.Code == funcCode);
             if (existFunc != null)
             {
@@ -117,6 +117,44 @@ namespace Hl.Identity.Application.Menus
             permission.Memo = input.Memo;
             await _menuManager.UpdateMenu(menu, permission);
             return "更新菜单成功";
+        }
+
+        public async Task<string> CreateOperation(CreateOperationInput input)
+        {
+            var operation = await _permissionRepository.FirstOrDefaultAsync(p => p.Code == input.Code);
+            if (operation != null)
+            {
+                throw new BusinessException($"系统中已经存在Code为{input.Code}的操作");
+            }
+            foreach (var funcId in input.FunctionIds)
+            {
+                var funcInfo = await _functionRepository.SingleOrDefaultAsync(p => p.Id == funcId);
+                if (funcInfo == null)
+                {
+                    throw new BusinessException($"系统中不存在{funcId}的功能");
+                }
+            }
+            operation = new Permission() {
+                Code = input.Code,
+                Name = input.Name,
+                Memo = input.Memo,
+                Mold = PermissionMold.Operate,
+            };
+            await _functionManager.CreateOperation(operation, input.FunctionIds);
+            return $"新增{input.Name}操作成功";
+        }
+
+        public async Task<string> UpdateOperation(UpdateOperationInput input)
+        {
+            var operation = await _permissionRepository.FirstOrDefaultAsync(p => p.Id == input.Id);
+            if (operation == null)
+            {
+                throw new BusinessException($"系统中不存在Id为{input.Id}的操作");
+            }
+            operation.Name = input.Name;
+            operation.Memo = input.Memo;
+            await _functionManager.UpdateOperation(operation, input.FunctionIds);
+            return $"修改{input.Name}操作成功";
         }
     }
 }
