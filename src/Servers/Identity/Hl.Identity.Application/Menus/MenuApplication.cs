@@ -1,4 +1,5 @@
-﻿using System.Threading.Tasks;
+﻿using System.Collections.Generic;
+using System.Threading.Tasks;
 using Hl.Core.Commons.Dtos;
 using Hl.Core.ServiceApi;
 using Hl.Core.Validates;
@@ -155,6 +156,22 @@ namespace Hl.Identity.Application.Menus
             operation.Memo = input.Memo;
             await _functionManager.UpdateOperation(operation, input.FunctionIds);
             return $"修改{input.Name}操作成功";
+        }
+
+        public async Task<ICollection<QueryFunctionOutput>> QueryFunctions(string keyworld)
+        {
+            var functions = await _functionRepository.GetAllAsync(p => p.WebApi.Contains(keyworld) || p.Code.Contains(keyworld));
+            return functions.MapTo<ICollection<QueryFunctionOutput>>();
+        }
+
+        public async Task<QueryFunctionOutput> QueryFunction(string keyworld)
+        {
+            var function = await _functionRepository.FirstOrDefaultAsync(p => p.WebApi.Equals(keyworld)  || p.Code.Equals(keyworld));
+            if (function == null)
+            {
+                throw new UserFriendlyException($"为查询到{keyworld}的功能记录");
+            }
+            return function.MapTo<QueryFunctionOutput>();
         }
     }
 }
