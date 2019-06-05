@@ -12,7 +12,7 @@ drop table if exists auth_function;
 
 drop table if exists auth_menu;
 
-drop table if exists auth_menu_function;
+/* drop table if exists auth_menu_function; */
 
 drop table if exists auth_org_role;
 
@@ -158,6 +158,7 @@ alter table auth_menu comment '菜单表';
 /*==============================================================*/
 /* Table: auth_menu_function                                    */
 /*==============================================================*/
+/*
 create table auth_menu_function
 (
    Id                   bigint not null auto_increment comment '主键',
@@ -171,6 +172,7 @@ create table auth_menu_function
 );
 
 alter table auth_menu_function comment '菜单功能关系表';
+*/
 
 /*==============================================================*/
 /* Table: auth_org_role                                         */
