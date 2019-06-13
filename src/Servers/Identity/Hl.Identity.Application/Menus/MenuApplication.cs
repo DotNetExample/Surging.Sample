@@ -173,5 +173,11 @@ namespace Hl.Identity.Application.Menus
             }
             return function.MapTo<QueryFunctionOutput>();
         }
+
+        public async Task<string> DeleteFunction(DeleteByIdInput input)
+        {
+            await _functionRepository.DeleteAsync(p => p.Id == input.Id);
+            return "删除功能操作成功";
+        }
     }
 }
