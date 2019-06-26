@@ -71,5 +71,9 @@ namespace Hl.Identity.Domain.Authorization.Users
             }, Connection);
         }
 
+        public async Task<UserInfo> GetUserInfoByUserId(long userId)
+        {
+            return await _userRepository.GetAsync(userId);
+        }
     }
 }

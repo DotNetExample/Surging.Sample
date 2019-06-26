@@ -9,5 +9,6 @@ namespace Hl.Identity.Domain.Authorization.Users
     {
         Task DeleteByUserId(long userId);
         Task CreateUserInfo(UserInfo userInfo);
+        Task<UserInfo> GetUserInfoByUserId(long userId);
     }
 }
